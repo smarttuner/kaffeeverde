@@ -1,5 +1,6 @@
 pluginManagement {
     repositories {
+        mavenLocal()
         gradlePluginPortal()
         google()
         mavenCentral()
@@ -9,6 +10,7 @@ pluginManagement {
 
 dependencyResolutionManagement {
     repositories {
+        mavenLocal()
         google()
         mavenCentral()
         maven("https://maven.mozilla.org/maven2/")
@@ -18,3 +20,8 @@ dependencyResolutionManagement {
 rootProject.name = "kaffeeverde"
 
 include(":core")
+include(":lifecycle")
+include(":lifecycle-viewmodel")
+include(":lifecycle-viewmodel-savedstate")
+include(":navigation-common")
+include(":navigation-runtime")

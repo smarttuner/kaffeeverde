@@ -167,14 +167,14 @@ open class SafeIterableMap<K, V> : Iterable<Map.Entry<K, V>?> {
         return mEnd
     }
 
-    override fun equals(obj: Any?): Boolean {
-        if (obj === this) {
+    override fun equals(other: Any?): Boolean {
+        if (other === this) {
             return true
         }
-        if (obj !is SafeIterableMap<*, *>) {
+        if (other !is SafeIterableMap<*, *>) {
             return false
         }
-        val map = obj
+        val map = other
         if (size() != map.size()) {
             return false
         }
@@ -318,7 +318,7 @@ open class SafeIterableMap<K, V> : Iterable<Map.Entry<K, V>?> {
 
         var mNext: Entry<K, V>? = null
         var mPrevious: Entry<K, V>? = null
-        override fun setValue(value: V): V {
+        override fun setValue(newValue: V): V {
             throw UnsupportedOperationException("An entry modification is not supported")
         }
 
@@ -326,14 +326,14 @@ open class SafeIterableMap<K, V> : Iterable<Map.Entry<K, V>?> {
             return key.toString() + "=" + value
         }
 
-        override fun equals(obj: Any?): Boolean {
-            if (obj === this) {
+        override fun equals(other: Any?): Boolean {
+            if (other === this) {
                 return true
             }
-            if (obj !is Entry<*, *>) {
+            if (other !is Entry<*, *>) {
                 return false
             }
-            val (key1, value1) = obj
+            val (key1, value1) = other
             return key == key1 && value == value1
         }
     }

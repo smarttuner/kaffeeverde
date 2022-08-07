@@ -19,5 +19,5 @@ venv
 /dist
 /mkdocs_material.egg-info
 .vscode
-/buildSrc/build/
-/core/build/
+/*/build/
+*.hprof

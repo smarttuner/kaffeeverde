@@ -107,7 +107,7 @@ abstract class Uri private constructor(){
          * @return an encoded version of s suitable for use as a URI component,
          * or null if s is null
          */
-        open fun encode(s: String?): String? {
+        fun encode(s: String?): String? {
             return encode(s, null)
         }
 
@@ -124,7 +124,7 @@ abstract class Uri private constructor(){
          * @return an encoded version of s suitable for use as a URI component,
          * or null if s is null
          */
-        open fun encode(s: String?, allow: String?): String? {
+        fun encode(s: String?, allow: String?): String? {
             if (s == null) {
                 return null
             }
@@ -497,11 +497,11 @@ abstract class Uri private constructor(){
      * default port explicitly and the other leaves it implicit, they will not
      * be considered equal.
      */
-    override fun equals( o: Any?): Boolean {
-        if (o !is Uri) {
+    override fun equals(other: Any?): Boolean {
+        if (other !is Uri) {
             return false
         }
-        return toString() == o.toString()
+        return toString() == other.toString()
     }
 
     /**
@@ -713,7 +713,7 @@ abstract class Uri private constructor(){
 
         private var authority: Part? = null
         private val authorityPart: Part
-            private get() {
+            get() {
                 val authority = authority
                 if (authority == null) {
                     val encodedAuthority: String? = parseAuthority(
@@ -796,12 +796,6 @@ abstract class Uri private constructor(){
         }
 
         private var fragment: Part? = null
-
-        init {
-            if (uriString == null) {
-                throw NullPointerException("uriString")
-            }
-        }
 
         private val fragmentPart: Part
             get() {
@@ -1675,7 +1669,7 @@ abstract class Uri private constructor(){
             }
         private var userInfo: Part? = null
         private val userInfoPart: Part
-            private get() = if (userInfo == null) Part.fromEncoded(parseUserInfo()).also {
+            get() = if (userInfo == null) Part.fromEncoded(parseUserInfo()).also {
                 userInfo = it
             } else userInfo!!
         override fun getEncodedUserInfo(): String? = userInfoPart.getEncoded()
@@ -1769,7 +1763,7 @@ abstract class Uri private constructor(){
         override fun isHierarchical(): Boolean = true
         override fun isRelative(): Boolean = _scheme == null
         private var ssp: Part? = null
-            private get() = if (field == null) Part.fromEncoded(makeSchemeSpecificPart()).also {
+            get() = if (field == null) Part.fromEncoded(makeSchemeSpecificPart()).also {
                 field = it
             } else field
         override fun getEncodedSchemeSpecificPart(): String? = ssp!!.getEncoded()

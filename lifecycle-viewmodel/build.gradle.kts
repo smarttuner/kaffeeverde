@@ -4,8 +4,8 @@ plugins {
     id(mavenPublish)
 }
 
-group = "net.smarttuner.kaffeeverde"
-version = "0.0.1"
+group = Versions.KAFFEEVERDE_LIB_GROUP
+version = Versions.KAFFEEVERDE_LIFECYCLE_VIEWMODEL
 
 kotlin {
     android()
@@ -21,12 +21,10 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(Deps.Ktor.Core)
-                api(Deps.UUID.UUID)
-                api(Deps.Napier.Napier)
-                implementation(Deps.DitchoomBuffer.DitchoomBuffer)
+                api(project(":lifecycle"))
             }
         }
+
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
@@ -34,8 +32,6 @@ kotlin {
         }
         val androidMain by getting
         val androidTest by getting
-        val desktopMain by getting
-        val desktopTest by getting
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
