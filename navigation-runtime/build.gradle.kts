@@ -59,4 +59,8 @@ android {
         minSdk = Versions.ANDROID_MIN_SDK
         targetSdk = Versions.ANDROID_TARGET_SDK
     }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
 }

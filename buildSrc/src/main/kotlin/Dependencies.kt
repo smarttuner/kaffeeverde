@@ -7,7 +7,7 @@ const val mavenPublish = "maven-publish"
 
 object Versions {
     const val KAFFEEVERDE_LIB_GROUP = "net.smarttuner.kaffeeverde"
-    const val KAFFEEVERDE_CORE = "0.0.3"
+    const val KAFFEEVERDE_CORE = "0.0.5"
     const val KAFFEEVERDE_LIFECYCLE = KAFFEEVERDE_CORE
     const val KAFFEEVERDE_LIFECYCLE_VIEWMODEL = KAFFEEVERDE_CORE
     const val KAFFEEVERDE_LIFECYCLE_VIEWMODEL_SAVEDSTATE = KAFFEEVERDE_CORE
