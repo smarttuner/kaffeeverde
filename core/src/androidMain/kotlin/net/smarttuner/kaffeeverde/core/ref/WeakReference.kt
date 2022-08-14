@@ -2,13 +2,13 @@ package net.smarttuner.kaffeeverde.core.ref
 
 actual class WeakReference<T : Any> {
 
-    val _intValue: WeakReference<T>
+    val _intValue: java.lang.ref.WeakReference<T>
     /**
      * Creates a weak reference object pointing to an object. Weak reference doesn't prevent
      * removing object, and is nullified once object is collected.
      */
     actual constructor(referred: T) {
-        _intValue = WeakReference(referred)
+        _intValue = java.lang.ref.WeakReference(referred)
     }
 
     /**
@@ -30,6 +30,6 @@ actual class WeakReference<T : Any> {
      * Returns either reference to an object or null, if it was collected.
      */
     actual val value: T?
-        get() = _intValue.value
+        get() = _intValue.get()
 
 }

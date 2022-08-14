@@ -4,11 +4,13 @@ plugins {
     id(mavenPublish)
 }
 
-group = "net.smarttuner.kaffeeverde"
-version = "0.0.1"
+group = Versions.KAFFEEVERDE_LIB_GROUP
+version = Versions.KAFFEEVERDE_CORE
 
 kotlin {
-    android()
+    android {
+        publishLibraryVariants("release", "debug")
+    }
     jvm("desktop") {
         compilations.all {
             kotlinOptions.jvmTarget = "11"

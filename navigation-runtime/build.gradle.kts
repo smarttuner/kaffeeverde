@@ -8,7 +8,9 @@ group = Versions.KAFFEEVERDE_LIB_GROUP
 version = Versions.KAFFEEVERDE_NAVIGATION_RUNTIME
 
 kotlin {
-    android()
+    android {
+        publishLibraryVariants("release", "debug")
+    }
     jvm("desktop") {
         compilations.all {
             kotlinOptions.jvmTarget = "11"
