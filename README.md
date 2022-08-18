@@ -4,7 +4,7 @@
 ![badge-iOS](https://img.shields.io/badge/Platform-iOS-lightgray)
 ![badge-JVM](https://img.shields.io/badge/Platform-JVM-orange)
 
-# KaffeeVerde-Core
+# KaffeeVerde
 
 This is a support library that makes porting of some AndroidX APIs easier to KMP.
 
