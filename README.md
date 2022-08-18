@@ -6,7 +6,7 @@
 
 # KaffeeVerde
 
-This is a support library that makes porting of some AndroidX APIs easier to KMP.
+This is a set of support libraries that makes porting of Jetpack Compose apps easier to KMP.
 
 This library **IS NOT READY FOR PRODUCTION USE**.
 
