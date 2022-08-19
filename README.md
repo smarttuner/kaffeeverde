@@ -12,7 +12,7 @@ This library **IS NOT READY FOR PRODUCTION USE**.
 
 ## Setup
 
-This library is not available through popular repositories. You can build and publish it into your local Maven repository:
+These libraries are not available through popular repositories. You can build and publish them into your local Maven repository:
 - Clone this repo using 'git clone'
 - Run the publishToMavenLocal task from the root of the project:
 ```
