@@ -35,10 +35,7 @@
 package net.smarttuner.kaffeeverde.lifecycle
 
 import net.smarttuner.kaffeeverde.core.Bundle
-import net.smarttuner.kaffeeverde.lifecycle.Lifecycle
 import net.smarttuner.kaffeeverde.lifecycle.viewmodel.CreationExtras
-import net.smarttuner.kaffeeverde.lifecycle.SavedStateRegistry
-import net.smarttuner.kaffeeverde.lifecycle.SavedStateRegistryOwner
 
 class SavedStateViewModelFactory : ViewModelProvider.OnRequeryFactory, ViewModelProvider.Factory {
     private val factory: ViewModelProvider.Factory
@@ -84,7 +81,7 @@ class SavedStateViewModelFactory : ViewModelProvider.OnRequeryFactory, ViewModel
      */
     constructor(owner: SavedStateRegistryOwner, defaultArgs: Bundle?) {
         savedStateRegistry = owner.savedStateRegistry
-        lifecycle = owner._lifecycle
+        lifecycle = owner.lifecycle
         this.defaultArgs = defaultArgs
         factory = ViewModelProvider.NonAndroidViewModelFactory()
     }

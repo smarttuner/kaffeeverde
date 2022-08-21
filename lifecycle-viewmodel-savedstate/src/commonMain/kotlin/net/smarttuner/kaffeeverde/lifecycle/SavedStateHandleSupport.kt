@@ -50,7 +50,7 @@ private const val SAVED_STATE_KEY = "androidx.lifecycle.internal.SavedStateHandl
 
 fun <T> T.enableSavedStateHandles()
         where T : SavedStateRegistryOwner, T : ViewModelStoreOwner {
-    val currentState = _lifecycle.currentState
+    val currentState = lifecycle.currentState
     require(
         currentState == Lifecycle.State.INITIALIZED || currentState == Lifecycle.State.CREATED
     )
@@ -59,7 +59,7 @@ fun <T> T.enableSavedStateHandles()
     if (savedStateRegistry.getSavedStateProvider(SAVED_STATE_KEY) == null) {
         val provider = SavedStateHandlesProvider(savedStateRegistry, this)
         savedStateRegistry.registerSavedStateProvider(SAVED_STATE_KEY, provider)
-        _lifecycle.addObserver(SavedStateHandleAttacher(provider))
+        lifecycle.addObserver(SavedStateHandleAttacher(provider))
     }
 }
 private fun createSavedStateHandle(
@@ -195,7 +195,7 @@ internal class SavedStateHandleAttacher(
         check(event == Lifecycle.Event.ON_CREATE) {
             "Next event must be ON_CREATE, it was $event"
         }
-        source._lifecycle.removeObserver(this)
+        source.lifecycle.removeObserver(this)
         // onRecreated() is called after the Lifecycle reaches CREATED, so we
         // eagerly restore the state as part of this call to ensure it consumed
         // even if no ViewModels are actually created during this cycle of the Lifecycle

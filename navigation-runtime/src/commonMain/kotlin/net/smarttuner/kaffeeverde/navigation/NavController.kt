@@ -315,7 +315,7 @@ open class NavController{
                 unlinkChildFromParent(entry)
                 // If the entry is no longer part of the backStack, we need to manually move
                 // it to DESTROYED, and clear its view model
-                if (entry._lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
+                if (entry.lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
                     entry.maxLifecycle = Lifecycle.State.DESTROYED
                 }
                 if (backQueue.none { it.id == entry.id } && !savedState) {
@@ -619,7 +619,7 @@ open class NavController{
         // need to check if it still has children.
         val transitioning = state?.transitionsInProgress?.value?.contains(entry) == true ||
                 parentToChildCount.containsKey(entry)
-        if (entry._lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
+        if (entry.lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
             if (saveState) {
                 // Move the state through STOPPED
                 entry.maxLifecycle = Lifecycle.State.CREATED
@@ -1625,9 +1625,9 @@ open class NavController{
         if (owner == lifecycleOwner) {
             return
         }
-        lifecycleOwner?._lifecycle?.removeObserver(lifecycleObserver)
+        lifecycleOwner?.lifecycle?.removeObserver(lifecycleObserver)
         lifecycleOwner = owner
-        owner._lifecycle.addObserver(lifecycleObserver)
+        owner.lifecycle.addObserver(lifecycleObserver)
     }
 
     /** @suppress */

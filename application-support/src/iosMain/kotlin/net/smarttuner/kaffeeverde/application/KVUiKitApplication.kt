@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.window.Application
+import net.smarttuner.kaffeeverde.compose.ui.platform.LocalLifecycleOwner
 import net.smarttuner.kaffeeverde.lifecycle.LifecycleOwner
 import net.smarttuner.kaffeeverde.lifecycle.LifecycleRegistry
 import net.smarttuner.kaffeeverde.lifecycle.ViewModelStore
@@ -49,7 +50,7 @@ private fun ProvideDesktopCompositionLocals(
 }
 
 class KVLifecycleHolder : LifecycleOwner {
-    override val _lifecycle by lazy {
+    override val lifecycle by lazy {
         LifecycleRegistry(this)
     }
 }

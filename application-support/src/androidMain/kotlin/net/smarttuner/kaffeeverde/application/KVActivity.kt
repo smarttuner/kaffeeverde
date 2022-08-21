@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.ViewTreeLifecycleOwner
 import androidx.savedstate.findViewTreeSavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import net.smarttuner.kaffeeverde.compose.ui.platform.LocalLifecycleOwner
 import net.smarttuner.kaffeeverde.lifecycle.*
 import net.smarttuner.kaffeeverde.lifecycle.ui.*
 
@@ -51,7 +52,7 @@ open class KVActivity :
     ViewModelStoreOwner,
     BackDispatcherOwner{
 
-    override val _lifecycle by lazy {
+    override val lifecycle by lazy {
         LifecycleRegistry(this)
     }
 
@@ -61,16 +62,16 @@ open class KVActivity :
 
     override fun onResume() {
         super.onResume()
-        _lifecycle.currentState = Lifecycle.State.RESUMED
+        lifecycle.currentState = Lifecycle.State.RESUMED
     }
 
     override fun onPause() {
-        _lifecycle.currentState = Lifecycle.State.STARTED
+        lifecycle.currentState = Lifecycle.State.STARTED
         super.onPause()
     }
 
     override fun onDestroy() {
-        _lifecycle.currentState = Lifecycle.State.DESTROYED
+        lifecycle.currentState = Lifecycle.State.DESTROYED
         super.onDestroy()
     }
 

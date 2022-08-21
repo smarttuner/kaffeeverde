@@ -27,7 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.flow.map
 import net.smarttuner.kaffeeverde.navigation.*
-import net.smarttuner.kaffeeverde.lifecycle.ui.LocalLifecycleOwner
+import net.smarttuner.kaffeeverde.compose.ui.platform.LocalLifecycleOwner
 import net.smarttuner.kaffeeverde.lifecycle.ui.LocalViewModelStoreOwner
 import net.smarttuner.kaffeeverde.navigation.compose.ComposeNavigator
 

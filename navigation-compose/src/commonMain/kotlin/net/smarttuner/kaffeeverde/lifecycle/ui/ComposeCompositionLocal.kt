@@ -33,13 +33,8 @@
 package net.smarttuner.kaffeeverde.lifecycle.ui
 
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.staticCompositionLocalOf
 import net.smarttuner.kaffeeverde.lifecycle.LifecycleOwner
 import net.smarttuner.kaffeeverde.lifecycle.ViewModelStoreOwner
 
-val LocalLifecycleOwner = compositionLocalOf<LifecycleOwner?> { null }
-
 val LocalViewModelStoreOwner = compositionLocalOf<ViewModelStoreOwner?> { null }
-
-private fun noLocalProvidedFor(name: String): Nothing {
-    error("CompositionLocal $name not present")
-}

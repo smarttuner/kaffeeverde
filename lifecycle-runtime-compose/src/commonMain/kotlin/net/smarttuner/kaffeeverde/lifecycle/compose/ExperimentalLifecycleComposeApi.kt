@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 The Android Open Source Project
+ * Copyright 2022 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,26 +18,18 @@
  * === WARNING ===
  *
  * The original source file used for this file is available here:
- * https://android.googlesource.com/platform/frameworks/support/+/HEAD/lifecycle/lifecycle-common/src/main/java/androidx/lifecycle/LifecycleOwner.java
+ * https://android.googlesource.com/platform/frameworks/support/+/HEAD/lifecycle/lifecycle-runtime-compose/src/main/java/androidx/lifecycle/compose/ExperimentalLifecycleComposeApi.kt
  *
  * The content of this file is a port of the original work with some additions
  *
  */
-package net.smarttuner.kaffeeverde.lifecycle
-
-/**
- * A class that has an Android lifecycle. These events can be used by custom components to
- * handle lifecycle changes without implementing any code inside the Activity or the Fragment.
- *
- * @see Lifecycle
- *
- * @see ViewTreeLifecycleOwner
- */
-interface LifecycleOwner {
-    /**
-     * Returns the Lifecycle of the provider.
-     *
-     * @return The lifecycle of the provider.
-     */
-    val lifecycle: Lifecycle
-}
+package net.smarttuner.kaffeeverde.lifecycle.compose
+@RequiresOptIn(message = "This is an experimental Lifecycle Compose API.")
+@Target(
+    AnnotationTarget.CLASS,
+    AnnotationTarget.FUNCTION,
+    AnnotationTarget.PROPERTY,
+    AnnotationTarget.FIELD,
+    AnnotationTarget.PROPERTY_GETTER,
+)
+annotation class ExperimentalLifecycleComposeApi

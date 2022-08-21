@@ -6,7 +6,7 @@ plugins {
 }
 
 group = Versions.KAFFEEVERDE_LIB_GROUP
-version = Versions.KAFFEEVERDE_NAVIGATION_COMPOSE
+version = Versions.KAFFEEVERDE_LIFECYCLE_RUNTIME_COMPOSE
 
 kotlin {
     android {
@@ -23,8 +23,8 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                api(project(":lifecycle"))
                 api(project(":compose-helper"))
-                api(project(":navigation-runtime"))
                 api(compose.ui)
                 api(compose.foundation)
                 api(compose.runtime)

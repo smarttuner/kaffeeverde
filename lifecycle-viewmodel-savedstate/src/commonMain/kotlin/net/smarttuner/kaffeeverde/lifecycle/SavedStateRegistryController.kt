@@ -31,8 +31,6 @@
 package net.smarttuner.kaffeeverde.lifecycle
 
 import net.smarttuner.kaffeeverde.core.Bundle
-import net.smarttuner.kaffeeverde.lifecycle.Recreator
-import net.smarttuner.kaffeeverde.lifecycle.Lifecycle
 
 class SavedStateRegistryController private constructor(private val owner: SavedStateRegistryOwner) {
     /**
@@ -47,7 +45,7 @@ class SavedStateRegistryController private constructor(private val owner: SavedS
      */
     
     fun performAttach() {
-        val lifecycle = owner._lifecycle
+        val lifecycle = owner.lifecycle
         check(lifecycle.currentState == Lifecycle.State.INITIALIZED) {
             ("Restarter must be created only during owner's initialization stage")
         }
@@ -67,7 +65,7 @@ class SavedStateRegistryController private constructor(private val owner: SavedS
         if (!attached) {
             performAttach()
         }
-        val lifecycle = owner._lifecycle
+        val lifecycle = owner.lifecycle
         check(!lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
             ("performRestore cannot be called when owner is ${lifecycle.currentState}")
         }

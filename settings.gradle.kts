@@ -20,9 +20,11 @@ dependencyResolutionManagement {
 rootProject.name = "kaffeeverde"
 
 include(":core")
+include(":compose-helper")
 include(":lifecycle")
 include(":lifecycle-viewmodel")
 include(":lifecycle-viewmodel-savedstate")
+include(":lifecycle-runtime-compose")
 include(":navigation-common")
 include(":navigation-compose")
 include(":navigation-runtime")

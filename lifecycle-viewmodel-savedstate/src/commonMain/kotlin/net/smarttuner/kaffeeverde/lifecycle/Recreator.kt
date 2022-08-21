@@ -25,11 +25,6 @@
 package net.smarttuner.kaffeeverde.lifecycle
 
 import net.smarttuner.kaffeeverde.core.Bundle
-import net.smarttuner.kaffeeverde.lifecycle.Lifecycle
-import net.smarttuner.kaffeeverde.lifecycle.LifecycleEventObserver
-import net.smarttuner.kaffeeverde.lifecycle.LifecycleOwner
-import net.smarttuner.kaffeeverde.lifecycle.SavedStateRegistry
-import net.smarttuner.kaffeeverde.lifecycle.SavedStateRegistryOwner
 
 internal class Recreator(
     private val owner: SavedStateRegistryOwner
@@ -38,7 +33,7 @@ internal class Recreator(
         if (event != Lifecycle.Event.ON_CREATE) {
             throw AssertionError("Next event must be ON_CREATE")
         }
-        source._lifecycle.removeObserver(this)
+        source.lifecycle.removeObserver(this)
         // The following code is commented because Kotlin/Native does not support full-reflection
 //        val bundle: Bundle = owner.savedStateRegistry
 //            .consumeRestoredStateForKey(COMPONENT_KEY) ?: return
