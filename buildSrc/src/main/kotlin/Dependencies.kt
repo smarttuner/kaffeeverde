@@ -7,7 +7,7 @@ const val composePlugin = "org.jetbrains.compose"
 
 object Versions {
     const val KAFFEEVERDE_LIB_GROUP = "net.smarttuner.kaffeeverde"
-    const val KAFFEEVERDE_CORE = "0.0.9"
+    const val KAFFEEVERDE_CORE = "0.0.10"
     const val KAFFEEVERDE_LIFECYCLE = KAFFEEVERDE_CORE
     const val KAFFEEVERDE_LIFECYCLE_VIEWMODEL = KAFFEEVERDE_CORE
     const val KAFFEEVERDE_LIFECYCLE_VIEWMODEL_SAVEDSTATE = KAFFEEVERDE_CORE
@@ -22,7 +22,7 @@ object Versions {
     const val ANDROID_TARGET_SDK = 32
     const val ANDROID_COMPILE_SDK = 32
 
-    const val KOTLIN = "1.7.0"
+    const val KOTLIN = "1.7.10"
     const val KOTLIN_GRADLE_PLUGIN = KOTLIN
     const val ANDROID_GRADLE_PLUGIN = "7.2.1"
     const val NAPIER = "2.6.1"
@@ -32,7 +32,7 @@ object Versions {
     const val DITCHOOM_BUFFER = "1.0.86"
 
     const val ANDROID_X_ACTIVITY= "1.4.0"
-    const val COMPOSE_MULTIPLATFORM_PLUGIN = "1.2.0-alpha01-dev753"
+    const val COMPOSE_MULTIPLATFORM_PLUGIN = "1.2.0-beta01"
 
     const val COMPOSE = "1.2.0"
 
