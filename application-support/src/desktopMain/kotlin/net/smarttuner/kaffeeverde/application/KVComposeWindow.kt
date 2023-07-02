@@ -50,14 +50,14 @@ private fun ProvideDesktopCompositionLocals(
 }
 
 class KVLifecycleWindowHolder : LifecycleOwner {
-    override val lifecycle by lazy {
+    override val platformLifecycle by lazy {
         LifecycleRegistry(this)
     }
 }
 
 
 private class KVWindowHolder : ViewModelStoreOwner, BackDispatcherOwner {
-    override val viewModelStore by lazy {
+    override val platformViewModelStore by lazy {
         ViewModelStore()
     }
     override val backDispatcher by lazy {

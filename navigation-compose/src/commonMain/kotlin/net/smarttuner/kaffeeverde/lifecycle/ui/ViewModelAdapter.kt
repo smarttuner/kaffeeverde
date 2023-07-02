@@ -66,7 +66,7 @@ fun <T : ViewModel> ViewModelStoreOwner.getViewModel(
     creator: () -> T,
 ): T {
     val key = (keys.map { it.hashCode().toString() } + modelClass.qualifiedName).joinToString()
-    val existing = viewModelStore[key]
+    val existing = platformViewModelStore[key]
     if (existing != null && modelClass.isInstance(existing)) {
         @Suppress("UNCHECKED_CAST")
         return existing as T
@@ -77,6 +77,6 @@ fun <T : ViewModel> ViewModelStoreOwner.getViewModel(
         }
     }
     val viewModel = creator.invoke()
-    viewModelStore.put(key, viewModel)
+    platformViewModelStore.put(key, viewModel)
     return viewModel
 }

@@ -23,6 +23,7 @@ import com.benasher44.uuid.Uuid
 import net.smarttuner.kaffeeverde.core.UUID
 import net.smarttuner.kaffeeverde.lifecycle.ViewModel
 import net.smarttuner.kaffeeverde.compose.ui.platform.LocalLifecycleOwner
+import net.smarttuner.kaffeeverde.compose.ui.platform.LocalSavedStateRegistryOwner
 import net.smarttuner.kaffeeverde.lifecycle.ui.LocalViewModelStoreOwner
 import net.smarttuner.kaffeeverde.navigation.NavBackStackEntry
 
@@ -44,7 +45,7 @@ public fun NavBackStackEntry.LocalOwnersProvider(
     CompositionLocalProvider(
         LocalViewModelStoreOwner provides this,
         LocalLifecycleOwner provides this,
-//        LocalSavedStateRegistryOwner provides this
+        LocalSavedStateRegistryOwner provides this
     ) {
         saveableStateHolder.SaveableStateProvider(content)
     }

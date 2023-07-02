@@ -10,6 +10,8 @@ buildscript {
     dependencies {
         classpath(Deps.kotlin_gradle_plugin)
         classpath(Deps.android_gradle_plugin)
+        classpath(Deps.kotlin_serialization_gradle_plugin)
+
     }
 }
 

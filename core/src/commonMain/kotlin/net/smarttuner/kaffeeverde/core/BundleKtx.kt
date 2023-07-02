@@ -14,7 +14,7 @@ public fun bundleOf(vararg pairs: Pair<String, Any?>): Bundle = Bundle().apply {
             is Long -> putLong(key, value)
             is Short -> putShort(key, value)
             // References
-            is Bundle -> putBundle(key, value)
+            is HashMap<*,*> -> putBundle(key, value)
             is CharSequence -> putCharSequence(key, value)
             // Scalar arrays
             is BooleanArray -> putBooleanArray(key, value)

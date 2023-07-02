@@ -24,6 +24,7 @@ package net.smarttuner.kaffeeverde.navigation
 
 import net.smarttuner.kaffeeverde.core.Bundle
 import net.smarttuner.kaffeeverde.core.Uri
+import net.smarttuner.kaffeeverde.core.putString
 import net.smarttuner.kaffeeverde.core.util.regex.Pattern
 
 /**

@@ -28,7 +28,7 @@ package net.smarttuner.kaffeeverde.core
 import kotlin.jvm.Synchronized
 
 /**
- * A mapping from String keys to various [Parcelable] values.
+ * A mapping from String keys to various [Serializable] values.
  *
  *
  * **Warning:** Note that [Bundle] is a lazy container and as such it does NOT implement
@@ -36,35 +36,13 @@ import kotlin.jvm.Synchronized
  *
  * @see PersistableBundle
  */
-class Bundle {
 
-    private val mParcelledData = mutableMapOf<String?,Any?>()
-
-    operator fun get(key: String): Any? = mParcelledData[key]
-    operator fun set(key: String, value: Any?) { mParcelledData[key] = value }
-
-    /**
-     * Constructs a new, empty Bundle.
-     */
-    constructor()
-
-    val isEmpty get() = mParcelledData.isEmpty()
-    val keySet get() = mParcelledData.keys
-    val size get() = mParcelledData.size
+typealias Bundle = HashMap<String?,Any?>
 
 
-    /**
-     * Constructs a Bundle containing a copy of the mappings from the given
-     * Bundle.  Does only a shallow copy of the original Bundle -- see
-     * [.deepCopy] if that is not what you want.
-     *
-     * @param b a Bundle to be copied.
-     *
-     * @see .deepCopy
-     */
-    constructor(b: Bundle) {
-        mParcelledData.putAll(b.mParcelledData)
-    }
+
+    val Bundle.isEmpty get() = this.isEmpty()
+    val Bundle.keySet get() = this.keys
 
 
 
@@ -72,7 +50,7 @@ class Bundle {
      * Clones the current Bundle. The internal map is cloned, but the keys and
      * values to which it refers are copied by reference.
      */
-    fun clone(): Bundle {
+    fun Bundle.clone(): Bundle {
         return Bundle(this)
     }
     
@@ -80,12 +58,12 @@ class Bundle {
     /**
      * Removes all elements from the mapping of this Bundle.
      */
-    fun clear() {
-        mParcelledData.clear()
+    fun Bundle.clear() {
+        this.clear()
     }
 
-    fun containsKey(key: String): Boolean{
-        return mParcelledData.containsKey(key)
+    fun Bundle.containsKey(key: String): Boolean{
+        return this.containsKey(key)
     }
 
     /**
@@ -93,8 +71,8 @@ class Bundle {
      *
      * @param key a String key
      */
-    fun remove(key: String?) {
-        mParcelledData.remove(key)
+    fun Bundle.remove(key: String?) {
+        this.remove(key)
     }
 
     /**
@@ -102,15 +80,15 @@ class Bundle {
      *
      * @param bundle a Bundle
      */
-    fun putAll(bundle: Bundle?) {
+    fun Bundle.putAll(bundle: Bundle?) {
         if(bundle==null) return
-        mParcelledData.putAll(bundle.mParcelledData)
+        this.putAll(bundle)
     }
 
 
 
     /** {@hide}  */
-    fun putObject(key: String?, value: Any?) {
+    fun Bundle.putObject(key: String?, value: Any?) {
         when (value) {
             is Byte -> putByte(key, value)
             is Char -> putChar(key, value)
@@ -124,7 +102,7 @@ class Bundle {
             is CharArray -> putCharArray(key, value as CharArray?)
             is FloatArray -> putFloatArray(key, value as FloatArray?)
             is BooleanArray -> putBooleanArray(key, value as BooleanArray?)
-            else -> mParcelledData[key] = value
+            else -> this[key] = value
         }
     }
 
@@ -135,8 +113,8 @@ class Bundle {
      * @param key a String, or null
      * @param value a byte
      */
-    fun putByte(key: String?, value: Byte) {
-        mParcelledData.put(key, value)
+    fun Bundle.putByte(key: String?, value: Byte) {
+        this.put(key, value)
     }
 
     /**
@@ -146,8 +124,8 @@ class Bundle {
      * @param key a String, or null
      * @param value a char
      */
-    fun putChar(key: String?, value: Char) {
-        mParcelledData.put(key, value)
+    fun Bundle.putChar(key: String?, value: Char) {
+        this.put(key, value)
     }
 
     /**
@@ -157,8 +135,8 @@ class Bundle {
      * @param key a String, or null
      * @param value a short
      */
-    fun putShort(key: String?, value: Short) {
-        mParcelledData[key] = value
+    fun Bundle.putShort(key: String?, value: Short) {
+        this[key] = value
     }
 
     /**
@@ -168,8 +146,8 @@ class Bundle {
      * @param key a String, or null
      * @param value a float
      */
-    fun putFloat(key: String?, value: Float) {
-        mParcelledData[key] = value
+    fun Bundle.putFloat(key: String?, value: Float) {
+        this[key] = value
     }
     /**
      * Inserts a double value into the mapping of this Bundle, replacing
@@ -178,8 +156,8 @@ class Bundle {
      * @param key a String, or null
      * @param value a double
      */
-    fun putDouble(key: String?, value: Double) {
-        mParcelledData[key] = value
+    fun Bundle.putDouble(key: String?, value: Double) {
+        this[key] = value
     }
 
     /**
@@ -189,8 +167,8 @@ class Bundle {
      * @param key a String, or null
      * @param value a long
      */
-    fun putLong(key: String?, value: Long) {
-        mParcelledData[key] = value
+    fun Bundle.putLong(key: String?, value: Long) {
+        this[key] = value
     }
 
     /**
@@ -200,8 +178,8 @@ class Bundle {
      * @param key a String, or null
      * @param value a Boolean
      */
-    fun putBoolean(key: String?, value: Boolean) {
-        mParcelledData[key] = value
+    fun Bundle.putBoolean(key: String?, value: Boolean) {
+        this[key] = value
     }
 
     /**
@@ -211,8 +189,8 @@ class Bundle {
      * @param key a String, or null
      * @param value a Int
      */
-    fun putInt(key: String?, value: Int) {
-        mParcelledData[key] = value
+    fun Bundle.putInt(key: String?, value: Int) {
+        this[key] = value
     }
 
     /**
@@ -222,8 +200,8 @@ class Bundle {
      * @param key a String, or null
      * @param value a String
      */
-    fun putString(key: String?, value: String?) {
-        mParcelledData[key] = value
+    fun Bundle.putString(key: String?, value: String?) {
+        this[key] = value
     }
 
     /**
@@ -233,8 +211,8 @@ class Bundle {
      * @param key a String, or null
      * @param value a CharSequence, or null
      */
-    fun putCharSequence(key: String?, value: CharSequence?) {
-        mParcelledData[key] = value
+    fun Bundle.putCharSequence(key: String?, value: CharSequence?) {
+        this[key] = value
     }
 
     /**
@@ -244,12 +222,12 @@ class Bundle {
      * @param key a String, or null
      * @param value an Array<String> object, or null
     </String></String> */
-    fun putStringArray(key: String, value: Array<String>?) {
-        mParcelledData[key] = value
+    fun Bundle.putStringArray(key: String, value: Array<String>?) {
+        this[key] = value
     }
 
 
-    fun getStringArrayList(key: String): ArrayList<String>? = mParcelledData[key] as? ArrayList<String>?
+    fun Bundle.getStringArrayList(key: String): ArrayList<String>? = this[key] as? ArrayList<String>?
 
     /**
      * Inserts an Array<String> value into the mapping of this Bundle, replacing
@@ -258,12 +236,12 @@ class Bundle {
      * @param key a String, or null
      * @param value an Array<Any> object, or null
     </String></String> */
-    fun putAnyArray(key: String, value: Array<Any?>?) {
-        mParcelledData[key] = value
+    fun Bundle.putAnyArray(key: String, value: Array<Any?>?) {
+        this[key] = value
     }
 
 
-    fun getAnyArrayList(key: String): ArrayList<Any>? = mParcelledData[key] as? ArrayList<Any>?
+    fun Bundle.getAnyArrayList(key: String): ArrayList<Any>? = this[key] as? ArrayList<Any>?
 
 
     /**
@@ -273,8 +251,8 @@ class Bundle {
      * @param key a String, or null
      * @param value an ArrayList<String> object, or null
     </String></String> */
-    fun putStringArrayList(key: String, value: ArrayList<String>?) {
-        mParcelledData[key] = value
+    fun Bundle.putStringArrayList(key: String, value: ArrayList<String>?) {
+        this[key] = value
     }
 
     /**
@@ -284,11 +262,11 @@ class Bundle {
      * @param key a String, or null
      * @param value an ArrayList<CharSequence> object, or null
     </CharSequence></CharSequence> */
-    fun putCharSequenceArrayList(
+    fun Bundle.putCharSequenceArrayList(
         key: String,
         value: ArrayList<CharSequence?>?
     ) {
-        mParcelledData.put(key, value)
+        this.put(key, value)
     }
 
 
@@ -299,8 +277,8 @@ class Bundle {
      * @param key a String, or null
      * @param value a byte array object, or null
      */
-    fun putByteArray(key: String?, value: ByteArray?) {
-        mParcelledData[key] = value
+    fun Bundle.putByteArray(key: String?, value: ByteArray?) {
+        this[key] = value
     }
 
     /**
@@ -310,8 +288,8 @@ class Bundle {
      * @param key a String, or null
      * @param value a short array object, or null
      */
-    fun putShortArray(key: String?, value: ShortArray?) {
-        mParcelledData[key] = value
+    fun Bundle.putShortArray(key: String?, value: ShortArray?) {
+        this[key] = value
     }
 
     /**
@@ -321,8 +299,8 @@ class Bundle {
      * @param key a String, or null
      * @param value a char array object, or null
      */
-    fun putCharArray(key: String?, value: CharArray?) {
-        mParcelledData[key] = value
+    fun Bundle.putCharArray(key: String?, value: CharArray?) {
+        this[key] = value
     }
 
     /**
@@ -332,8 +310,8 @@ class Bundle {
      * @param key a String, or null
      * @param value a float array object, or null
      */
-    fun putFloatArray(key: String?, value: FloatArray?) {
-        mParcelledData[key] = value
+    fun Bundle.putFloatArray(key: String?, value: FloatArray?) {
+        this[key] = value
     }
 
     /**
@@ -343,8 +321,8 @@ class Bundle {
      * @param key a String, or null
      * @param value a double array object, or null
      */
-    fun putDoubleArray(key: String?, value: DoubleArray?) {
-        mParcelledData[key] = value
+    fun Bundle.putDoubleArray(key: String?, value: DoubleArray?) {
+        this[key] = value
     }
 
     /**
@@ -354,8 +332,8 @@ class Bundle {
      * @param key a String, or null
      * @param value a long array object, or null
      */
-    fun putLongArray(key: String?, value: LongArray?) {
-        mParcelledData[key] = value
+    fun Bundle.putLongArray(key: String?, value: LongArray?) {
+        this[key] = value
     }
 
     /**
@@ -365,8 +343,8 @@ class Bundle {
      * @param key a String, or null
      * @param value a integer array object, or null
      */
-    fun putIntArray(key: String?, value: IntArray?) {
-        mParcelledData[key] = value
+    fun Bundle.putIntArray(key: String?, value: IntArray?) {
+        this[key] = value
     }
 
     /**
@@ -376,8 +354,8 @@ class Bundle {
      * @param key a String, or null
      * @param value a boolean array object, or null
      */
-    fun putBooleanArray(key: String?, value: BooleanArray?) {
-        mParcelledData[key] = value
+    fun Bundle.putBooleanArray(key: String?, value: BooleanArray?) {
+        this[key] = value
     }
 
 
@@ -388,16 +366,16 @@ class Bundle {
      * @param key a String, or null
      * @param value a Bundle object, or null
      */
-    fun putBundle(key: String?, value: Bundle?) {
-        mParcelledData[key] = value
+    fun Bundle.putBundle(key: String?, value: HashMap<*,*>?) {
+        this[key] = value
     }
 
-    fun getBundle(key: String?): Bundle? {
-        return mParcelledData[key] as Bundle?
+    fun Bundle.getBundle(key: String?): Bundle? {
+        return this[key] as Bundle?
     }
 
-    fun getByte(key: String?): Byte {
-        return mParcelledData[key] as Byte
+    fun Bundle.getByte(key: String?): Byte {
+        return this[key] as Byte
     }
 
     /**
@@ -408,8 +386,8 @@ class Bundle {
      * @param defaultValue Value to return if key does not exist
      * @return a byte value
      */
-    fun getByte(key: String?, defaultValue: Byte): Byte {
-        return mParcelledData.get(key) as? Byte ?: defaultValue
+    fun Bundle.getByte(key: String?, defaultValue: Byte): Byte {
+        return this.get(key) as? Byte ?: defaultValue
     }
 
     /**
@@ -419,8 +397,8 @@ class Bundle {
      * @param key a String
      * @return a char value
      */
-    fun getChar(key: String?): Char {
-        return mParcelledData[key] as Char 
+    fun Bundle.getChar(key: String?): Char {
+        return this[key] as Char 
     }
 
     /**
@@ -431,8 +409,8 @@ class Bundle {
      * @param defaultValue Value to return if key does not exist
      * @return a char value
      */
-    fun getChar(key: String?, defaultValue: Char): Char {
-        return mParcelledData[key] as? Char ?: defaultValue 
+    fun Bundle.getChar(key: String?, defaultValue: Char): Char {
+        return this[key] as? Char ?: defaultValue 
     }
 
     /**
@@ -442,8 +420,8 @@ class Bundle {
      * @param key a String
      * @return a Int value
      */
-    fun getInt(key: String?): Int {
-        return mParcelledData[key] as Int
+    fun Bundle.getInt(key: String?): Int {
+        return this[key] as Int
     }
 
     /**
@@ -453,8 +431,8 @@ class Bundle {
      * @param key a String
      * @return a String value
      */
-    fun getString(key: String?): String {
-        return mParcelledData[key] as String
+    fun Bundle.getString(key: String?): String {
+        return this[key] as String
     }
 
     /**
@@ -464,8 +442,8 @@ class Bundle {
      * @param key a String
      * @return a Boolean value
      */
-    fun getBoolean(key: String?): Boolean {
-        return mParcelledData[key] as Boolean
+    fun Bundle.getBoolean(key: String?): Boolean {
+        return this[key] as Boolean
     }
 
 
@@ -476,8 +454,8 @@ class Bundle {
      * @param key a String
      * @return a short value
      */
-    fun getShort(key: String?): Short {
-        return mParcelledData[key] as Short
+    fun Bundle.getShort(key: String?): Short {
+        return this[key] as Short
     }
 
     /**
@@ -488,8 +466,8 @@ class Bundle {
      * @param defaultValue Value to return if key does not exist
      * @return a short value
      */
-    fun getShort(key: String?, defaultValue: Short): Short {
-        return mParcelledData[key] as? Short ?: defaultValue 
+    fun Bundle.getShort(key: String?, defaultValue: Short): Short {
+        return this[key] as? Short ?: defaultValue 
     }
 
     /**
@@ -499,8 +477,8 @@ class Bundle {
      * @param key a String
      * @return a float value
      */
-    fun getFloat(key: String?): Float {
-        return mParcelledData[key] as Float 
+    fun Bundle.getFloat(key: String?): Float {
+        return this[key] as Float 
     }
 
     /**
@@ -511,8 +489,8 @@ class Bundle {
      * @param defaultValue Value to return if key does not exist
      * @return a float value
      */
-    fun getFloat(key: String?, defaultValue: Float): Float {
-        return mParcelledData[key] as? Float ?: defaultValue 
+    fun Bundle.getFloat(key: String?, defaultValue: Float): Float {
+        return this[key] as? Float ?: defaultValue 
     }
 
     /**
@@ -523,8 +501,8 @@ class Bundle {
      * @param key a String, or null
      * @return a CharSequence value, or null
      */
-        fun getCharSequence(key: String?): CharSequence {
-        return mParcelledData[key] as CharSequence 
+        fun Bundle.getCharSequence(key: String?): CharSequence {
+        return this[key] as CharSequence 
     }
 
 
@@ -536,8 +514,8 @@ class Bundle {
      * @param key a String, or null
      * @return a byte[] value, or null
      */
-    fun getByteArray(key: String?): ByteArray {
-        return mParcelledData[key] as ByteArray 
+    fun Bundle.getByteArray(key: String?): ByteArray {
+        return this[key] as ByteArray 
     }
 
     /**
@@ -548,8 +526,8 @@ class Bundle {
      * @param key a String, or null
      * @return a IntArray value, or null
      */
-    fun getIntArray(key: String?): IntArray {
-        return mParcelledData[key] as IntArray
+    fun Bundle.getIntArray(key: String?): IntArray {
+        return this[key] as IntArray
     }
 
     /**
@@ -560,8 +538,8 @@ class Bundle {
      * @param key a String, or null
      * @return a short[] value, or null
      */
-        fun getShortArray(key: String?): ShortArray {
-        return mParcelledData[key] as ShortArray 
+        fun Bundle.getShortArray(key: String?): ShortArray {
+        return this[key] as ShortArray 
     }
 
     /**
@@ -572,8 +550,8 @@ class Bundle {
      * @param key a String, or null
      * @return a char[] value, or null
      */
-        fun getCharArray(key: String?): CharArray {
-        return mParcelledData[key] as CharArray 
+        fun Bundle.getCharArray(key: String?): CharArray {
+        return this[key] as CharArray 
     }
 
     /**
@@ -584,28 +562,18 @@ class Bundle {
      * @param key a String, or null
      * @return a float[] value, or null
      */
-        fun getFloatArray(key: String?): FloatArray {
-        return mParcelledData[key] as FloatArray 
+        fun Bundle.getFloatArray(key: String?): FloatArray {
+        return this[key] as FloatArray 
     }
 
 
 
-     /**
-     * Returns a string representation of the [Bundle] that may be suitable for debugging. It
-     * won't print the internal map if its content hasn't been unparcelled.
-     */
-    @Synchronized
-    override fun toString(): String {
-        return "Bundle[mParcelledData.size=" +
-                        mParcelledData.size + "]"
-    }
+  
 
     /**
      * @hide
      */
     @Synchronized
-    fun toShortString(): String {
-        return "mParcelledData.size=" + mParcelledData.size
+    fun Bundle.toShortString(): String {
+        return "this.size=" + this.size
     }
-
-}

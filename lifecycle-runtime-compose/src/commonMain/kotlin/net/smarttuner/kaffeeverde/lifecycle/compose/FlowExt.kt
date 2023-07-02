@@ -68,7 +68,7 @@ fun <T> StateFlow<T>.collectAsStateWithLifecycle(
     context: CoroutineContext = EmptyCoroutineContext
 ): State<T> = collectAsStateWithLifecycle(
     initialValue = this.value,
-    lifecycle = lifecycleOwner.lifecycle,
+    lifecycle = lifecycleOwner.platformLifecycle,
     minActiveState = minActiveState,
     context = context
 )
@@ -140,7 +140,7 @@ fun <T> Flow<T>.collectAsStateWithLifecycle(
     context: CoroutineContext = EmptyCoroutineContext
 ): State<T> = collectAsStateWithLifecycle(
     initialValue = initialValue,
-    lifecycle = lifecycleOwner.lifecycle,
+    lifecycle = lifecycleOwner.platformLifecycle,
     minActiveState = minActiveState,
     context = context
 )

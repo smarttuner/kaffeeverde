@@ -17,8 +17,8 @@ kotlin {
             kotlinOptions.jvmTarget = "11"
         }
     }
-    iosX64()
-    iosArm64()
+    ios()
+    iosSimulatorArm64()
 
     sourceSets {
         val commonMain by getting {
@@ -37,27 +37,17 @@ kotlin {
         val androidMain by getting {
             dependsOn(commonMain)
             dependencies {
+                implementation(Deps.AndroidXPlatform.AppCompat)
                 implementation(Deps.AndroidXPlatform.ActivityKtx)
-                with(Deps.Compose){
-                    implementation(runtime)
-                    implementation(ui)
-                }
+                implementation("androidx.lifecycle:lifecycle-runtime:2.6.1")
+                implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
+
             }
         }
         val androidTest by getting
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosMain by creating {
-            dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-        }
-        val iosX64Test by getting
-        val iosArm64Test by getting
-        val iosTest by creating {
-            dependsOn(commonTest)
-            iosX64Test.dependsOn(this)
-            iosArm64Test.dependsOn(this)
+        val iosMain by getting
+        val iosSimulatorArm64Main by getting {
+            dependsOn(iosMain)
         }
     }
 }

@@ -38,10 +38,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.ComposeView
-import androidx.lifecycle.ViewTreeLifecycleOwner
 import androidx.savedstate.findViewTreeSavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import net.smarttuner.kaffeeverde.compose.ui.platform.LocalLifecycleOwner
+import net.smarttuner.kaffeeverde.compose.ui.platform.LocalSavedStateRegistryOwner
 import net.smarttuner.kaffeeverde.lifecycle.*
 import net.smarttuner.kaffeeverde.lifecycle.ui.*
 
@@ -50,28 +50,33 @@ open class KVActivity :
     ComponentActivity(),
     LifecycleOwner,
     ViewModelStoreOwner,
-    BackDispatcherOwner{
+    BackDispatcherOwner,
+    SavedStateRegistryOwner{
 
-    override val lifecycle by lazy {
+    private val savedStateRegistryController: SavedStateRegistryController =
+        SavedStateRegistryController.create(this)
+    override val platformSavedStateRegistry: SavedStateRegistry
+        get() = savedStateRegistryController.savedStateRegistry
+    override val platformLifecycle by lazy {
         LifecycleRegistry(this)
     }
 
-    override val viewModelStore by lazy {
+    override val platformViewModelStore by lazy {
         ViewModelStore()
     }
 
     override fun onResume() {
         super.onResume()
-        lifecycle.currentState = Lifecycle.State.RESUMED
+        platformLifecycle.currentState = Lifecycle.State.RESUMED
     }
 
     override fun onPause() {
-        lifecycle.currentState = Lifecycle.State.STARTED
+        platformLifecycle.currentState = Lifecycle.State.STARTED
         super.onPause()
     }
 
     override fun onDestroy() {
-        lifecycle.currentState = Lifecycle.State.DESTROYED
+        platformLifecycle.currentState = Lifecycle.State.DESTROYED
         super.onDestroy()
     }
 
@@ -115,17 +120,19 @@ fun KVActivity.setContent(
 
 private fun KVActivity.setOwners() {
     val decorView = window.decorView
-    if (ViewTreeLifecycleOwner.get(decorView) == null) {
-        ViewTreeLifecycleOwner.set(decorView, this)
-    }
+//    if (ViewTreeLifecycleOwner.get(decorView) == null) {
+//        ViewTreeLifecycleOwner.set(decorView, this)
+//    }
     if (decorView.findViewTreeSavedStateRegistryOwner() == null) {
         decorView.setViewTreeSavedStateRegistryOwner(this)
     }
 }
 
 @Composable
-private fun KVActivity.ContentInternal(content: @Composable () -> Unit) {
-    ProvideAndroidCompositionLocals {
+private fun KVActivity.ContentInternal(
+    content: @Composable () -> Unit
+) {
+    ProvideAndroidCompositionLocals() {
         content.invoke()
     }
 }
@@ -138,6 +145,7 @@ private fun KVActivity.ProvideAndroidCompositionLocals(
         LocalLifecycleOwner provides this,
         LocalViewModelStoreOwner provides this,
         LocalBackDispatcherOwner provides this,
+        LocalSavedStateRegistryOwner provides this,
     ) {
         content.invoke()
     }

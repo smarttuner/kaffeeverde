@@ -67,8 +67,8 @@ abstract class AbstractSavedStateViewModelFactory : ViewModelProvider.OnRequeryF
         owner: SavedStateRegistryOwner,
         defaultArgs: Bundle?
     ) {
-        mSavedStateRegistry = owner.savedStateRegistry
-        mLifecycle = owner.lifecycle
+        mSavedStateRegistry = owner.platformSavedStateRegistry
+        mLifecycle = owner.platformLifecycle
         mDefaultArgs = defaultArgs
     }
 

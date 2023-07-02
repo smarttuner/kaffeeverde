@@ -22,6 +22,16 @@
 package net.smarttuner.kaffeeverde.navigation
 
 import net.smarttuner.kaffeeverde.core.Bundle
+import net.smarttuner.kaffeeverde.core.putBoolean
+import net.smarttuner.kaffeeverde.core.putBooleanArray
+import net.smarttuner.kaffeeverde.core.putFloat
+import net.smarttuner.kaffeeverde.core.putFloatArray
+import net.smarttuner.kaffeeverde.core.putInt
+import net.smarttuner.kaffeeverde.core.putIntArray
+import net.smarttuner.kaffeeverde.core.putLong
+import net.smarttuner.kaffeeverde.core.putLongArray
+import net.smarttuner.kaffeeverde.core.putString
+import net.smarttuner.kaffeeverde.core.putStringArray
 
 /**
  * NavType denotes the type that can be used in a [NavArgument].

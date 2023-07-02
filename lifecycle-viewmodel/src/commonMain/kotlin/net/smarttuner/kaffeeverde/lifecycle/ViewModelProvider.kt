@@ -109,7 +109,7 @@ constructor(
      */
     constructor(
         owner: ViewModelStoreOwner
-    ) : this(owner.viewModelStore, defaultFactory(owner), defaultCreationExtras(owner))
+    ) : this(owner.platformViewModelStore, defaultFactory(owner), defaultCreationExtras(owner))
     /**
      * Creates `ViewModelProvider`, which will create `ViewModels` via the given
      * `Factory` and retain them in a store of the given `ViewModelStoreOwner`.
@@ -120,7 +120,7 @@ constructor(
      * new `ViewModels`
      */
     constructor(owner: ViewModelStoreOwner, factory: Factory) : this(
-        owner.viewModelStore,
+        owner.platformViewModelStore,
         factory,
         defaultCreationExtras(owner)
     )

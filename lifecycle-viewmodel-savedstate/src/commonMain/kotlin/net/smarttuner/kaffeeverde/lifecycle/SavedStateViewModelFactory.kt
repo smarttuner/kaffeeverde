@@ -80,8 +80,8 @@ class SavedStateViewModelFactory : ViewModelProvider.OnRequeryFactory, ViewModel
      * if there is no previously saved state or previously saved state misses a value by such key.
      */
     constructor(owner: SavedStateRegistryOwner, defaultArgs: Bundle?) {
-        savedStateRegistry = owner.savedStateRegistry
-        lifecycle = owner.lifecycle
+        savedStateRegistry = owner.platformSavedStateRegistry
+        lifecycle = owner.platformLifecycle
         this.defaultArgs = defaultArgs
         factory = ViewModelProvider.NonAndroidViewModelFactory()
     }

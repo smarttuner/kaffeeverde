@@ -45,7 +45,7 @@ class SavedStateRegistryController private constructor(private val owner: SavedS
      */
     
     fun performAttach() {
-        val lifecycle = owner.lifecycle
+        val lifecycle = owner.platformLifecycle
         check(lifecycle.currentState == Lifecycle.State.INITIALIZED) {
             ("Restarter must be created only during owner's initialization stage")
         }
@@ -65,7 +65,7 @@ class SavedStateRegistryController private constructor(private val owner: SavedS
         if (!attached) {
             performAttach()
         }
-        val lifecycle = owner.lifecycle
+        val lifecycle = owner.platformLifecycle
         check(!lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
             ("performRestore cannot be called when owner is ${lifecycle.currentState}")
         }

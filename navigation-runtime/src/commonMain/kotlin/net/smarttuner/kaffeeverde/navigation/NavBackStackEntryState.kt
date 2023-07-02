@@ -22,22 +22,24 @@
 package net.smarttuner.kaffeeverde.navigation
 
 import net.smarttuner.kaffeeverde.core.Bundle
+import net.smarttuner.kaffeeverde.core.Serializable
 import net.smarttuner.kaffeeverde.lifecycle.Lifecycle
 
 
-internal class NavBackStackEntryState : Any {
-    val id: String
-    val destinationId: Int
-    val args: Bundle?
-    val savedState: Bundle
-    constructor(entry: NavBackStackEntry) {
-        id = entry.id
-        destinationId = entry.destination.id
-        args = entry.arguments
-        savedState = Bundle()
-        entry.saveState(savedState)
-    }
-    fun instantiate(
+data class NavBackStackEntryState(val id: String,
+                                  val destinationId: Int,
+                                  val args: Bundle?,
+                                  val savedState: Bundle):
+    Serializable {
+
+    constructor(entry: NavBackStackEntry) : this(
+        entry.id,
+        entry.destination.id,
+        entry.arguments,
+        Bundle().apply { entry.saveState(this) }
+    )
+
+    internal fun instantiate(
         destination: NavDestination,
         hostLifecycleState: Lifecycle.State,
         viewModel: NavControllerViewModel?

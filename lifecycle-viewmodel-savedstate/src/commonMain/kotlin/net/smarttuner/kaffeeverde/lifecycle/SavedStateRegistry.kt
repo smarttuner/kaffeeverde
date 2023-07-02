@@ -32,6 +32,8 @@
 package net.smarttuner.kaffeeverde.lifecycle
 
 import net.smarttuner.kaffeeverde.core.Bundle
+import net.smarttuner.kaffeeverde.core.getBundle
+import net.smarttuner.kaffeeverde.core.putBundle
 import net.smarttuner.kaffeeverde.core.putIfAbsent
 import net.smarttuner.kaffeeverde.lifecycle.Lifecycle
 
@@ -78,7 +80,7 @@ class SavedStateRegistry internal constructor() {
         if (restoredState != null) {
             val result = restoredState?.getBundle(key)
             restoredState?.remove(key)
-            if (restoredState?.isEmpty != false) {
+            if (restoredState?.isEmpty() != false) {
                 restoredState = null
             }
             return result
@@ -240,7 +242,7 @@ class SavedStateRegistry internal constructor() {
             val (key, value) = it.next()
             components.putBundle(key, value.saveState())
         }
-        if (!components.isEmpty) {
+        if (!components.isEmpty()) {
             outBundle.putBundle(SAVED_COMPONENTS_KEY, components)
         }
     }

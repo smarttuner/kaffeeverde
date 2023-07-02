@@ -32,7 +32,18 @@ import kotlinx.coroutines.flow.asStateFlow
 import net.smarttuner.kaffeeverde.core.AtomicInteger
 import net.smarttuner.kaffeeverde.core.Bundle
 import net.smarttuner.kaffeeverde.core.Uri
+import net.smarttuner.kaffeeverde.core.getAnyArrayList
+import net.smarttuner.kaffeeverde.core.getBoolean
+import net.smarttuner.kaffeeverde.core.getBundle
+import net.smarttuner.kaffeeverde.core.getIntArray
+import net.smarttuner.kaffeeverde.core.getStringArrayList
 import net.smarttuner.kaffeeverde.core.net.URISyntaxException
+import net.smarttuner.kaffeeverde.core.putAnyArray
+import net.smarttuner.kaffeeverde.core.putBoolean
+import net.smarttuner.kaffeeverde.core.putBundle
+import net.smarttuner.kaffeeverde.core.putIntArray
+import net.smarttuner.kaffeeverde.core.putObject
+import net.smarttuner.kaffeeverde.core.putStringArrayList
 import net.smarttuner.kaffeeverde.core.toUri
 import net.smarttuner.kaffeeverde.lifecycle.ViewModelStore
 import net.smarttuner.kaffeeverde.lifecycle.ViewModelStoreOwner
@@ -315,7 +326,7 @@ open class NavController{
                 unlinkChildFromParent(entry)
                 // If the entry is no longer part of the backStack, we need to manually move
                 // it to DESTROYED, and clear its view model
-                if (entry.lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
+                if (entry.platformLifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
                     entry.maxLifecycle = Lifecycle.State.DESTROYED
                 }
                 if (backQueue.none { it.id == entry.id } && !savedState) {
@@ -619,7 +630,7 @@ open class NavController{
         // need to check if it still has children.
         val transitioning = state?.transitionsInProgress?.value?.contains(entry) == true ||
                 parentToChildCount.containsKey(entry)
-        if (entry.lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
+        if (entry.platformLifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
             if (saveState) {
                 // Move the state through STOPPED
                 entry.maxLifecycle = Lifecycle.State.CREATED
@@ -1625,9 +1636,9 @@ open class NavController{
         if (owner == lifecycleOwner) {
             return
         }
-        lifecycleOwner?.lifecycle?.removeObserver(lifecycleObserver)
+        lifecycleOwner?.platformLifecycle?.removeObserver(lifecycleObserver)
         lifecycleOwner = owner
-        owner.lifecycle.addObserver(lifecycleObserver)
+        owner.platformLifecycle.addObserver(lifecycleObserver)
     }
 
     /** @suppress */

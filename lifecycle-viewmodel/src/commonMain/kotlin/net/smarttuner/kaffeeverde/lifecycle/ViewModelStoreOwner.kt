@@ -41,5 +41,5 @@ interface ViewModelStoreOwner {
      *
      * @return a `ViewModelStore`
      */
-    val viewModelStore: ViewModelStore
+    val platformViewModelStore: ViewModelStore
 }

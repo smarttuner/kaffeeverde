@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.map
 import net.smarttuner.kaffeeverde.navigation.*
 import net.smarttuner.kaffeeverde.compose.ui.platform.LocalLifecycleOwner
 import net.smarttuner.kaffeeverde.lifecycle.ui.LocalViewModelStoreOwner
-import net.smarttuner.kaffeeverde.navigation.compose.ComposeNavigator
 
 /**
  * Provides in place in the Compose hierarchy for self contained navigation to occur.
@@ -89,7 +88,7 @@ public fun NavHost(
     }
     // Setup the navController with proper owners
     navController.setLifecycleOwner(lifecycleOwner!!)
-    navController.setViewModelStore(viewModelStoreOwner.viewModelStore)
+    navController.setViewModelStore(viewModelStoreOwner.platformViewModelStore)
     // Ensure that the NavController only receives back events while
     // the NavHost is in composition
     // Then set the graph

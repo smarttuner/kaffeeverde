@@ -176,4 +176,4 @@ public suspend fun Lifecycle.repeatOnLifecycle(
 public suspend fun LifecycleOwner.repeatOnLifecycle(
     state: Lifecycle.State,
     block: suspend CoroutineScope.() -> Unit
-): Unit = lifecycle.repeatOnLifecycle(state, block)
+): Unit = platformLifecycle.repeatOnLifecycle(state, block)

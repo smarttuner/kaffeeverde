@@ -33,7 +33,7 @@ import net.smarttuner.kaffeeverde.core.net.UriCodec.decode
 import kotlin.jvm.Volatile
 
 
-abstract class Uri private constructor(){
+abstract class Uri private constructor(): Serializable{
 
     companion object{
         /** Index of a component which was not found.  */
@@ -46,8 +46,8 @@ abstract class Uri private constructor(){
          * The empty URI, equivalent to "".
          */
         val EMPTY: Uri = HierarchicalUri(
-            null, Part.NULL,
-            PathPart.EMPTY, Part.NULL, Part.NULL
+            null, Part.nullPart,
+            PathPart.emptyPathPart, Part.nullPart, Part.nullPart
         )
 
         /**
@@ -925,7 +925,7 @@ abstract class Uri private constructor(){
     /**
      * Support for part implementations.
      */
-    abstract class AbstractPart(encoded: String?, decoded: String?) {
+    abstract class AbstractPart(encoded: String?, decoded: String?): Serializable {
         @Volatile
         var _encoded: String? = null
 
@@ -995,17 +995,17 @@ abstract class Uri private constructor(){
 
         companion object {
             /** A part with null values.  */
-            val NULL: Part = EmptyPart(null)
+            val nullPart: Part = EmptyPart(null)
 
             /** A part with empty strings for values.  */
-            val EMPTY: Part = EmptyPart("")
+            val emptyPart: Part = EmptyPart("")
 
 
             /**
              * Returns given part or [.NULL] if the given part is null.
              */
             fun nonNull(part: Part?): Part {
-                return part ?: NULL
+                return part ?: nullPart
             }
 
             /**
@@ -1036,16 +1036,16 @@ abstract class Uri private constructor(){
                 // We have to check both encoded and decoded in case one is
                 // NotCachedHolder.NOT_CACHED.
                 if (encoded == null) {
-                    return NULL
+                    return nullPart
                 }
                 if (encoded.isEmpty()) {
-                    return EMPTY
+                    return emptyPart
                 }
                 if (decoded == null) {
-                    return NULL
+                    return nullPart
                 }
                 return if (decoded.isEmpty()) {
-                    EMPTY
+                    emptyPart
                 } else Part(encoded, decoded)
             }
         }
@@ -1102,10 +1102,10 @@ abstract class Uri private constructor(){
 
         companion object {
             /** A part with null values.  */
-            val NULL = PathPart(null, null)
+            val nullPathPart = PathPart(null, null)
 
             /** A part with empty strings for values.  */
-            val EMPTY = PathPart("", "")
+            val emptyPathPart = PathPart("", "")
             fun appendEncodedSegment(
                 oldPart: PathPart?,
                 newSegment: String
@@ -1164,10 +1164,10 @@ abstract class Uri private constructor(){
              */
             fun from(encoded: String?, decoded: String?): PathPart {
                 if (encoded == null) {
-                    return NULL
+                    return nullPathPart
                 }
                 return if (encoded.length == 0) {
-                    EMPTY
+                    emptyPathPart
                 } else PathPart(encoded, decoded)
             }
 
@@ -1557,8 +1557,8 @@ abstract class Uri private constructor(){
             } else {
                 // Hierarchical URIs should not return null for getPath().
                 var path = path
-                if (path == null || path == PathPart.NULL) {
-                    path = PathPart.EMPTY
+                if (path == null || path == PathPart.nullPathPart) {
+                    path = PathPart.emptyPathPart
                 } else {
                     // If we have a scheme and/or authority, the path must
                     // be absolute. Prepend it with a '/' if necessary.
@@ -1580,7 +1580,7 @@ abstract class Uri private constructor(){
         }
 
         private fun hasSchemeOrAuthority(): Boolean {
-            return scheme != null || (authority != null && authority !== Part.NULL)
+            return scheme != null || (authority != null && authority !== Part.nullPart)
         }
 
         override fun toString(): String {
@@ -1625,7 +1625,7 @@ abstract class Uri private constructor(){
         private var cachedString = NotCachedHolder.NOT_CACHED
 
         init {
-            this.fragment = fragment ?: Part.NULL
+            this.fragment = fragment ?: Part.nullPart
         }
 
         override fun toString(): String {
@@ -1838,7 +1838,7 @@ abstract class Uri private constructor(){
         init {
             this._scheme = scheme
             this.authority = Part.nonNull(authority)
-            this.path = path ?: PathPart.NULL
+            this.path = path ?: PathPart.nullPathPart
             this.query = Part.nonNull(query)
             this.fragment = Part.nonNull(fragment)
         }

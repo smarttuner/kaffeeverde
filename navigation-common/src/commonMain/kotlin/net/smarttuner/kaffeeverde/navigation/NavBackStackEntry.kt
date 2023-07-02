@@ -23,6 +23,7 @@ package net.smarttuner.kaffeeverde.navigation
 
 import net.smarttuner.kaffeeverde.core.Bundle
 import net.smarttuner.kaffeeverde.core.UUID
+import net.smarttuner.kaffeeverde.core.keySet
 import net.smarttuner.kaffeeverde.lifecycle.*
 import net.smarttuner.kaffeeverde.lifecycle.viewmodel.CreationExtras
 import net.smarttuner.kaffeeverde.lifecycle.viewmodel.MutableCreationExtras
@@ -90,7 +91,7 @@ class NavBackStackEntry private constructor(
             hostLifecycleState, viewModelStoreProvider, id, savedState
         )
     }
-    override var lifecycle = LifecycleRegistry(this)
+    override var platformLifecycle = LifecycleRegistry(this)
     private val savedStateRegistryController = SavedStateRegistryController.create(this)
     private var savedStateRegistryAttached = false
     private val defaultFactory by lazy {
@@ -105,7 +106,7 @@ class NavBackStackEntry private constructor(
                     "the NavController's back stack (i.e., the Lifecycle of the NavBackStackEntry " +
                     "reaches the CREATED state)."
         }
-        check(lifecycle.currentState != Lifecycle.State.DESTROYED) {
+        check(platformLifecycle.currentState != Lifecycle.State.DESTROYED) {
             "You cannot access the NavBackStackEntry's SavedStateHandle after the " +
                     "NavBackStackEntry is destroyed."
         }
@@ -148,26 +149,26 @@ class NavBackStackEntry private constructor(
             savedStateRegistryController.performRestore(savedState)
         }
         if (hostLifecycleState.ordinal < maxLifecycle.ordinal) {
-            lifecycle.currentState = hostLifecycleState
+            platformLifecycle.currentState = hostLifecycleState
         } else {
-            lifecycle.currentState = maxLifecycle
+            platformLifecycle.currentState = maxLifecycle
         }
     }
     /**
      * {@inheritDoc}
      *
-     * @throws IllegalStateException if called before the [lifecycle] has moved to
+     * @throws IllegalStateException if called before the [platformLifecycle] has moved to
      * [Lifecycle.State.CREATED] or before the [androidx.navigation.NavHost] has called
      * [androidx.navigation.NavHostController.setViewModelStore].
      */
-    override val viewModelStore: ViewModelStore
+    override val platformViewModelStore: ViewModelStore
     get(){
         check(savedStateRegistryAttached) {
             "You cannot access the NavBackStackEntry's ViewModels until it is added to " +
                     "the NavController's back stack (i.e., the Lifecycle of the NavBackStackEntry " +
                     "reaches the CREATED state)."
         }
-        check(lifecycle.currentState != Lifecycle.State.DESTROYED) {
+        check(platformLifecycle.currentState != Lifecycle.State.DESTROYED) {
             "You cannot access the NavBackStackEntry's ViewModels after the " +
                     "NavBackStackEntry is destroyed."
         }
@@ -188,7 +189,7 @@ class NavBackStackEntry private constructor(
         }
         return extras
     }
-    override val savedStateRegistry: SavedStateRegistry
+    override val platformSavedStateRegistry: SavedStateRegistry
         get() = savedStateRegistryController.savedStateRegistry
     /** @suppress */
 
@@ -199,7 +200,7 @@ class NavBackStackEntry private constructor(
     override fun equals(other: Any?): Boolean {
         if (other == null || other !is NavBackStackEntry) return false
         return id == other.id && destination == other.destination &&
-                lifecycle == other.lifecycle && savedStateRegistry == other.savedStateRegistry &&
+                platformLifecycle == other.platformLifecycle && platformSavedStateRegistry == other.platformSavedStateRegistry &&
                 (
                         arguments == other.arguments ||
                                 arguments?.keySet?.filterNotNull()
@@ -213,8 +214,8 @@ class NavBackStackEntry private constructor(
         arguments?.keySet?.filterNotNull()?.forEach {
             result = 31 * result + arguments[it].hashCode()
         }
-        result = 31 * result + lifecycle.hashCode()
-        result = 31 * result + savedStateRegistry.hashCode()
+        result = 31 * result + platformLifecycle.hashCode()
+        result = 31 * result + platformSavedStateRegistry.hashCode()
         return result
     }
     /**

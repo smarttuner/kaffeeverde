@@ -29,6 +29,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import net.smarttuner.kaffeeverde.core.Bundle
 import net.smarttuner.kaffeeverde.core.bundleOf
+import net.smarttuner.kaffeeverde.core.getStringArrayList
+import net.smarttuner.kaffeeverde.core.keySet
 
 /**
  * A handle to saved state passed down to [androidx.lifecycle.ViewModel]. You should use
@@ -228,7 +230,7 @@ class SavedStateHandle {
             LongArray::class,
             String::class,
             Array::class, // bundle
-            Bundle::class,
+            HashMap::class,
             Byte::class,
             ByteArray::class,
             Char::class,

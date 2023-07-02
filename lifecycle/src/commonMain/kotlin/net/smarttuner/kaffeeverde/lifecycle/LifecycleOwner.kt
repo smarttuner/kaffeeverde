@@ -39,5 +39,5 @@ interface LifecycleOwner {
      *
      * @return The lifecycle of the provider.
      */
-    val lifecycle: Lifecycle
+    val platformLifecycle: Lifecycle
 }

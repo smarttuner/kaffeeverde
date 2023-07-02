@@ -25,6 +25,8 @@
 package net.smarttuner.kaffeeverde.lifecycle
 
 import net.smarttuner.kaffeeverde.core.Bundle
+import net.smarttuner.kaffeeverde.core.getBundle
+import net.smarttuner.kaffeeverde.core.putBundle
 import net.smarttuner.kaffeeverde.lifecycle.ViewModelProvider.NewInstanceFactory.Companion.VIEW_MODEL_KEY
 import net.smarttuner.kaffeeverde.lifecycle.viewmodel.CreationExtras
 import net.smarttuner.kaffeeverde.lifecycle.viewmodel.initializer
@@ -50,16 +52,16 @@ private const val SAVED_STATE_KEY = "androidx.lifecycle.internal.SavedStateHandl
 
 fun <T> T.enableSavedStateHandles()
         where T : SavedStateRegistryOwner, T : ViewModelStoreOwner {
-    val currentState = lifecycle.currentState
+    val currentState = platformLifecycle.currentState
     require(
         currentState == Lifecycle.State.INITIALIZED || currentState == Lifecycle.State.CREATED
     )
     // Add the SavedStateProvider used to save SavedStateHandles
     // if we haven't already registered the provider
-    if (savedStateRegistry.getSavedStateProvider(SAVED_STATE_KEY) == null) {
-        val provider = SavedStateHandlesProvider(savedStateRegistry, this)
-        savedStateRegistry.registerSavedStateProvider(SAVED_STATE_KEY, provider)
-        lifecycle.addObserver(SavedStateHandleAttacher(provider))
+    if (platformSavedStateRegistry.getSavedStateProvider(SAVED_STATE_KEY) == null) {
+        val provider = SavedStateHandlesProvider(platformSavedStateRegistry, this)
+        platformSavedStateRegistry.registerSavedStateProvider(SAVED_STATE_KEY, provider)
+        platformLifecycle.addObserver(SavedStateHandleAttacher(provider))
     }
 }
 private fun createSavedStateHandle(
@@ -122,7 +124,7 @@ internal val ViewModelStoreOwner.savedStateHandlesVM: SavedStateHandlesVM
         return vm
     }
 internal val SavedStateRegistryOwner.savedStateHandlesProvider: SavedStateHandlesProvider
-    get() = savedStateRegistry.getSavedStateProvider(SAVED_STATE_KEY) as? SavedStateHandlesProvider
+    get() = platformSavedStateRegistry.getSavedStateProvider(SAVED_STATE_KEY) as? SavedStateHandlesProvider
         ?: throw IllegalStateException("enableSavedStateHandles() wasn't called " +
                 "prior to createSavedStateHandle() call")
 internal class SavedStateHandlesVM : ViewModel() {
@@ -142,6 +144,7 @@ internal class SavedStateHandlesProvider(
         viewModelStoreOwner.savedStateHandlesVM
     }
     override fun saveState(): Bundle {
+        val restoredState = restoredState
         return Bundle().apply {
             // Ensure that even if ViewModels aren't recreated after process death and recreation
             // that we keep their state until they are recreated
@@ -152,7 +155,7 @@ internal class SavedStateHandlesProvider(
             // have restored
             viewModel.handles.forEach { (key, handle) ->
                 val savedState = handle.savedStateProvider().saveState()
-                if (!savedState.isEmpty) {
+                if (!savedState.isEmpty()) {
                     putBundle(key, savedState)
                 }
             }
@@ -181,7 +184,7 @@ internal class SavedStateHandlesProvider(
         performRestore()
         return restoredState?.getBundle(key).also {
             restoredState?.remove(key)
-            if (restoredState?.isEmpty == true) {
+            if (restoredState?.isEmpty() == true) {
                 restoredState = null
             }
         }
@@ -195,7 +198,7 @@ internal class SavedStateHandleAttacher(
         check(event == Lifecycle.Event.ON_CREATE) {
             "Next event must be ON_CREATE, it was $event"
         }
-        source.lifecycle.removeObserver(this)
+        source.platformLifecycle.removeObserver(this)
         // onRecreated() is called after the Lifecycle reaches CREATED, so we
         // eagerly restore the state as part of this call to ensure it consumed
         // even if no ViewModels are actually created during this cycle of the Lifecycle

@@ -52,5 +52,5 @@ interface SavedStateRegistryOwner : LifecycleOwner {
     /**
      * The [SavedStateRegistry] owned by this SavedStateRegistryOwner
      */
-    val savedStateRegistry: SavedStateRegistry
+    val platformSavedStateRegistry: SavedStateRegistry
 }
