@@ -1609,7 +1609,7 @@ open class NavController{
         backStackStates.clear()
         val backStackDestIds = navState.getIntArray(KEY_BACK_STACK_DEST_IDS)
         val backStackIds = navState.getStringArrayList(KEY_BACK_STACK_IDS)
-        if (backStackIds != null) {
+        if (backStackDestIds != null && backStackIds != null) {
             backStackDestIds.forEachIndexed { index, id ->
                 backStackMap[id] = backStackIds[index]
             }

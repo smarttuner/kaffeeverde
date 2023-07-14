@@ -443,7 +443,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @return a Boolean value
      */
     fun Bundle.getBoolean(key: String?): Boolean {
-        return this[key] as Boolean
+        return if(this[key]!=null) this[key] as Boolean else false
     }
 
 
@@ -526,8 +526,8 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @return a IntArray value, or null
      */
-    fun Bundle.getIntArray(key: String?): IntArray {
-        return this[key] as IntArray
+    fun Bundle.getIntArray(key: String?): IntArray? {
+        return this[key] as? IntArray?
     }
 
     /**
