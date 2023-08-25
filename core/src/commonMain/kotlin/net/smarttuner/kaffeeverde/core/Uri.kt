@@ -1201,16 +1201,12 @@ abstract class Uri private constructor(): Serializable{
      * Wrapper for path segment array.
      */
     class PathSegments(val segments: Array<String?>?, override val size: Int) :
-        AbstractList<String?>(), RandomAccess {
+        AbstractList<String?>(), RandomAccess, Serializable {
         override fun get(index: Int): String? {
             if (index >= size) {
                 throw IndexOutOfBoundsException()
             }
             return segments!![index]
-        }
-
-        fun size(): Int {
-            return size
         }
 
         companion object {
@@ -1222,7 +1218,7 @@ abstract class Uri private constructor(): Serializable{
      * Builds PathSegments.
      */
     internal class PathSegmentsBuilder {
-        var segments: Array<String?>? = arrayOf()
+        var segments: Array<String?>? = null
         var size = 0
         fun add(segment: String?) {
             var segments = segments
@@ -1257,12 +1253,12 @@ abstract class Uri private constructor(): Serializable{
      *
      * @return a set of decoded names
      */
-    open fun getQueryParameterNames(): Set<String?>? {
+    open fun getQueryParameterNames(): Set<String> {
         if (isOpaque()) {
             throw UnsupportedOperationException(NOT_HIERARCHICAL)
         }
         val query = getEncodedQuery() ?: return setOf()
-        val names: MutableSet<String?> = LinkedHashSet()
+        val names: MutableSet<String> = LinkedHashSet()
         var start = 0
         do {
             val next = query.indexOf('&', start)
@@ -1272,7 +1268,9 @@ abstract class Uri private constructor(): Serializable{
                 separator = end
             }
             val name = query.substring(start, separator)
-            names.add(decode(name))
+            decode(name)?.let {
+                names.add(it)
+            }
             // Move start to end of name.
             start = end + 1
         } while (start < query.length)
@@ -1288,7 +1286,7 @@ abstract class Uri private constructor(): Serializable{
      * @throws NullPointerException if key is null
      * @return a list of decoded values
      */
-    open fun getQueryParameters(key: String?): List<String?>? {
+    open fun getQueryParameters(key: String?): List<String> {
         if (isOpaque()) {
             throw UnsupportedOperationException(NOT_HIERARCHICAL)
         }
@@ -1296,13 +1294,12 @@ abstract class Uri private constructor(): Serializable{
             throw NullPointerException("key")
         }
         val query = getEncodedQuery() ?: return listOf()
-        val encodedKey: String
-        encodedKey = try {
+        val encodedKey: String = try {
             URLEncoder.encode(key, DEFAULT_ENCODING)
         } catch (e: UnsupportedEncodingException) {
             throw AssertionError(e)
         }
-        val values = mutableListOf<String?>()
+        val values = mutableListOf<String>()
         var start = 0
         do {
             val nextAmpersand = query.indexOf('&', start)
@@ -1317,7 +1314,9 @@ abstract class Uri private constructor(): Serializable{
                 if (separator == end) {
                     values.add("")
                 } else {
-                    values.add(decode(query.substring(separator + 1, end)))
+                    decode(query.substring(separator + 1, end))?.let{
+                        values.add(it)
+                    }
                 }
             }
             // Move start to end of name.

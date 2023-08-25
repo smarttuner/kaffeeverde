@@ -1,4 +1,10 @@
 /*
+ * === WARNING ===
+ *
+ * The original source file used for this file is available here:
+ * https://android.googlesource.com/platform/frameworks/support/+/HEAD/navigation/navigation-common/src/main/java/androidx/navigation/NavGraphBuilder.kt
+ */
+/*
  * Copyright 2018 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,15 +19,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * === WARNING ===
- *
- * The original source file used for this file is available here:
- * https://android.googlesource.com/platform/frameworks/support/+/HEAD/navigation/navigation-common/src/main/java/androidx/navigation/NavGraphBuilder.kt
- */
 package net.smarttuner.kaffeeverde.navigation
-
-
+import net.smarttuner.kaffeeverde.core.annotation.IdRes
 /**
  * Construct a new [NavGraph]
  *
@@ -36,12 +35,12 @@ package net.smarttuner.kaffeeverde.navigation
     "Use routes to build your NavGraph instead",
     ReplaceWith(
         "navigation(startDestination = startDestination.toString(), route = id.toString()) " +
-                "{ builder.invoke() }"
+            "{ builder.invoke() }"
     )
 )
-inline fun NavigatorProvider.navigation(
-    id: Int = 0,
-    startDestination: Int,
+public inline fun NavigatorProvider.navigation(
+    @IdRes id: Int = 0,
+    @IdRes startDestination: Int,
     builder: NavGraphBuilder.() -> Unit
 ): NavGraph = NavGraphBuilder(this, id, startDestination).apply(builder).build()
 /**
@@ -53,7 +52,7 @@ inline fun NavigatorProvider.navigation(
  *
  * @return the newly constructed NavGraph
  */
-inline fun NavigatorProvider.navigation(
+public inline fun NavigatorProvider.navigation(
     startDestination: String,
     route: String? = null,
     builder: NavGraphBuilder.() -> Unit
@@ -73,12 +72,12 @@ inline fun NavigatorProvider.navigation(
     "Use routes to build your nested NavGraph instead",
     ReplaceWith(
         "navigation(startDestination = startDestination.toString(), route = id.toString()) " +
-                "{ builder.invoke() }"
+            "{ builder.invoke() }"
     )
 )
-inline fun NavGraphBuilder.navigation(
-    id: Int,
-    startDestination: Int,
+public inline fun NavGraphBuilder.navigation(
+    @IdRes id: Int,
+    @IdRes startDestination: Int,
     builder: NavGraphBuilder.() -> Unit
 ): Unit = destination(NavGraphBuilder(provider, id, startDestination).apply(builder))
 /**
@@ -90,7 +89,7 @@ inline fun NavGraphBuilder.navigation(
  *
  * @return the newly constructed nested NavGraph
  */
-inline fun NavGraphBuilder.navigation(
+public inline fun NavGraphBuilder.navigation(
     startDestination: String,
     route: String,
     builder: NavGraphBuilder.() -> Unit
@@ -99,12 +98,12 @@ inline fun NavGraphBuilder.navigation(
  * DSL for constructing a new [NavGraph]
  */
 @NavDestinationDsl
-open class NavGraphBuilder : NavDestinationBuilder<NavGraph> {
+public open class NavGraphBuilder : NavDestinationBuilder<NavGraph> {
     /**
      * The [NavGraphBuilder]'s [NavigatorProvider].
      */
-    val provider: NavigatorProvider
-    private var startDestinationId: Int = 0
+    public val provider: NavigatorProvider
+    @IdRes private var startDestinationId: Int = 0
     private var startDestinationRoute: String? = null
     /**
      * DSL for constructing a new [NavGraph]
@@ -120,13 +119,13 @@ open class NavGraphBuilder : NavDestinationBuilder<NavGraph> {
         "Use routes to build your NavGraph instead",
         ReplaceWith(
             "NavGraphBuilder(provider, startDestination = startDestination.toString(), " +
-                    "route = id.toString())"
+                "route = id.toString())"
         )
     )
-    constructor(
+    public constructor(
         provider: NavigatorProvider,
-        id: Int,
-        startDestination: Int
+        @IdRes id: Int,
+        @IdRes startDestination: Int
     ) : super(provider[NavGraphNavigator::class], id) {
         this.provider = provider
         this.startDestinationId = startDestination
@@ -140,7 +139,7 @@ open class NavGraphBuilder : NavDestinationBuilder<NavGraph> {
      *
      * @return the newly created NavGraph
      */
-    constructor(
+    public constructor(
         provider: NavigatorProvider,
         startDestination: String,
         route: String?
@@ -152,19 +151,19 @@ open class NavGraphBuilder : NavDestinationBuilder<NavGraph> {
     /**
      * Build and add a new destination to the [NavGraphBuilder]
      */
-    fun <D : NavDestination> destination(navDestination: NavDestinationBuilder<D>) {
+    public fun <D : NavDestination> destination(navDestination: NavDestinationBuilder<D>) {
         destinations += navDestination.build()
     }
     /**
      * Adds this destination to the [NavGraphBuilder]
      */
-    operator fun NavDestination.unaryPlus() {
+    public operator fun NavDestination.unaryPlus() {
         addDestination(this)
     }
     /**
      * Add the destination to the [NavGraphBuilder]
      */
-    fun addDestination(destination: NavDestination) {
+    public fun addDestination(destination: NavDestination) {
         destinations += destination
     }
     override fun build(): NavGraph = super.build().also { navGraph ->

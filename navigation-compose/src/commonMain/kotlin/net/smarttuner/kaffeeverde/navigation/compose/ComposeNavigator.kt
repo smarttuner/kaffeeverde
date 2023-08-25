@@ -15,11 +15,18 @@ package net.smarttuner.kaffeeverde.navigation.compose
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import net.smarttuner.kaffeeverde.navigation.NavBackStackEntry
 import net.smarttuner.kaffeeverde.navigation.NavDestination
 import net.smarttuner.kaffeeverde.navigation.NavOptions
 import net.smarttuner.kaffeeverde.navigation.Navigator
+import net.smarttuner.kaffeeverde.navigation.compose.ComposeNavigator.Destination
+import kotlin.jvm.JvmSuppressWildcards
 
 /**
  * Navigator that navigates through [Composable]s. Every destination using this Navigator must
@@ -27,7 +34,7 @@ import net.smarttuner.kaffeeverde.navigation.Navigator
  * [composable].
  */
 @Navigator.Name("composable")
-public class ComposeNavigator : Navigator<ComposeNavigator.Destination>() {
+public class ComposeNavigator : Navigator<Destination>() {
     /**
      * Get the map of transitions currently in progress from the [state].
      */
@@ -35,7 +42,8 @@ public class ComposeNavigator : Navigator<ComposeNavigator.Destination>() {
     /**
      * Get the back stack from the [state].
      */
-    internal val backStack get() = state.backStack
+    public val backStack get() = state.backStack
+    internal val isPop = mutableStateOf(false)
     override fun navigate(
         entries: List<NavBackStackEntry>,
         navOptions: NavOptions?,
@@ -44,22 +52,26 @@ public class ComposeNavigator : Navigator<ComposeNavigator.Destination>() {
         entries.forEach { entry ->
             state.pushWithTransition(entry)
         }
+        isPop.value = false
     }
     override fun createDestination(): Destination {
         return Destination(this) { }
     }
     override fun popBackStack(popUpTo: NavBackStackEntry, savedState: Boolean) {
         state.popWithTransition(popUpTo, savedState)
+        isPop.value = true
     }
     /**
-     * Callback that removes the given [NavBackStackEntry] from the [map of the transitions in
-     * progress][transitionsInProgress]. This should be called in conjunction with [navigate] and
-     * [popBackStack] as those call are responsible for adding entries to [transitionsInProgress].
+     * Callback to mark a navigation in transition as complete.
+     *
+     * This should be called in conjunction with [navigate] and [popBackStack] as those
+     * calls merely start a transition to the target destination, and requires manually marking
+     * the transition as complete by calling this method.
      *
      * Failing to call this method could result in entries being prevented from reaching their
-     * final [Lifecycle.State]}.
+     * final [Lifecycle.State].
      */
-    fun onTransitionComplete(entry: NavBackStackEntry) {
+    public fun onTransitionComplete(entry: NavBackStackEntry) {
         state.markTransitionComplete(entry)
     }
     /**
@@ -68,9 +80,19 @@ public class ComposeNavigator : Navigator<ComposeNavigator.Destination>() {
     @NavDestination.ClassType(Composable::class)
     public class Destination(
         navigator: ComposeNavigator,
-        val content: @Composable (NavBackStackEntry) -> Unit
-    ) : NavDestination(navigator)
+        internal val content:
+            @Composable AnimatedContentScope.(@JvmSuppressWildcards NavBackStackEntry) -> Unit
+    ) : NavDestination(navigator) {
+        internal var enterTransition: (@JvmSuppressWildcards
+        AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? = null
+        internal var exitTransition: (@JvmSuppressWildcards
+        AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? = null
+        internal var popEnterTransition: (@JvmSuppressWildcards
+        AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? = null
+        internal var popExitTransition: (@JvmSuppressWildcards
+        AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? = null
+    }
     internal companion object {
-        internal val NAME = ComposeNavigator::class.simpleName
+        internal val NAME = "composable"
     }
 }

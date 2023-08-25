@@ -21,13 +21,19 @@
  */
 package net.smarttuner.kaffeeverde.navigation
 
+import androidx.annotation.CallSuper
+import androidx.annotation.RestrictTo
+import net.smarttuner.kaffeeverde.core.annotation.SuppressLint
+import kotlin.jvm.JvmStatic
 import kotlin.reflect.KClass
 /**
  * A NavigationProvider stores a set of [Navigator]s that are valid ways to navigate
  * to a destination.
  */
+@SuppressLint("TypeParameterUnusedInFormals")
 public open class NavigatorProvider {
     private val _navigators: MutableMap<String, Navigator<out NavDestination>> = mutableMapOf()
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public val navigators: Map<String, Navigator<out NavDestination>>
         get() = _navigators.toMap()
     /**
@@ -91,7 +97,7 @@ public open class NavigatorProvider {
      * @param navigator navigator to add
      * @return the previously added Navigator for the given name, if any
      */
-    
+    @CallSuper
     public open fun addNavigator(
         name: String,
         navigator: Navigator<out NavDestination>
@@ -114,19 +120,23 @@ public open class NavigatorProvider {
         internal fun validateName(name: String?): Boolean {
             return name != null && name.isNotEmpty()
         }
+        @JvmStatic
         internal fun getNameForNavigator(navigatorClass: KClass<out Navigator<*>>): String {
             var name = annotationNames[navigatorClass]
             if (name == null) {
-//                val annotation = navigatorClass::class.getAnnotation(
-//                    Navigator.Name::class.java
-//                )
-                name = navigatorClass.simpleName
+                name = when(navigatorClass.simpleName){
+                    "NavGraphNavigator", "ComposeNavGraphNavigator" -> "navigation"
+                    "ComposeNavigator" -> "composable"
+                    "DialogNavigator" -> "dialog"
+                    else -> null
+                }
                 require(validateName(name)) {
                     "No @Navigator.Name annotation found for ${navigatorClass.simpleName}"
                 }
                 annotationNames[navigatorClass] = name
             }
-            return name!!        }
+            return name!!
+        }
     }
 }
 /**

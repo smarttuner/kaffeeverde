@@ -3,7 +3,7 @@ package net.smarttuner.kaffeeverde.application
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
-import androidx.compose.ui.window.Application
+import androidx.compose.ui.window.ComposeUIViewController
 import net.smarttuner.kaffeeverde.compose.ui.platform.LocalLifecycleOwner
 import net.smarttuner.kaffeeverde.lifecycle.LifecycleOwner
 import net.smarttuner.kaffeeverde.lifecycle.LifecycleRegistry
@@ -17,9 +17,7 @@ fun KVUiKitApplication(
     lifecycleHolder: KVLifecycleHolder,
     content: @Composable (lifecycleHolder: KVLifecycleHolder) -> Unit
 ): UIViewController {
-    return Application(
-        title
-    ) {
+    return ComposeUIViewController {
         val holder = remember {
             PreComposeWindowHolder()
         }

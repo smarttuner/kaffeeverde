@@ -9,7 +9,7 @@ group = Versions.KAFFEEVERDE_LIB_GROUP
 version = Versions.KAFFEEVERDE_LIFECYCLE_RUNTIME_COMPOSE
 
 kotlin {
-    android {
+    androidTarget {
         publishLibraryVariants("release", "debug")
     }
     jvm("desktop") {
@@ -36,7 +36,7 @@ kotlin {
             }
         }
         val androidMain by getting
-        val androidTest by getting
+        val androidUnitTest by getting
         val iosMain by getting
         val iosSimulatorArm64Main by getting {
             dependsOn(iosMain)

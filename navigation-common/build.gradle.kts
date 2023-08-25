@@ -8,7 +8,7 @@ group = Versions.KAFFEEVERDE_LIB_GROUP
 version = Versions.KAFFEEVERDE_NAVIGATION_COMMON
 
 kotlin {
-    android {
+    androidTarget {
         publishLibraryVariants("release", "debug")
     }
     jvm("desktop") {
@@ -31,7 +31,7 @@ kotlin {
             }
         }
         val androidMain by getting
-        val androidTest by getting
+        val androidUnitTest by getting
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting

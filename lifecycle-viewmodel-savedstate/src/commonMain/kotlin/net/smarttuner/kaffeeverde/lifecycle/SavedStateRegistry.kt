@@ -1,4 +1,13 @@
 /*
+ * === WARNING ===
+ *
+ * The original source file used for this file is available here:
+ * https://android.googlesource.com/platform/frameworks/support/+/HEAD/savedstate/savedstate/src/main/java/androidx/savedstate/SavedStateRegistry.kt
+ *
+ * The content of this file is a port of the original work with some additions
+ *
+ */
+/*
  * Copyright 2019 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +22,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.smarttuner.kaffeeverde.lifecycle
+
+import net.smarttuner.kaffeeverde.core.Bundle
+import net.smarttuner.kaffeeverde.core.SafeIterableMap
+import net.smarttuner.kaffeeverde.core.annotation.MainThread
+import net.smarttuner.kaffeeverde.core.annotation.SuppressLint
+import net.smarttuner.kaffeeverde.core.getBundle
+import net.smarttuner.kaffeeverde.core.putBundle
+import net.smarttuner.kaffeeverde.core.putIfAbsent
+import kotlin.reflect.KClass
+
 /**
  * An interface for plugging components that consumes and contributes to the saved state.
  *
@@ -20,23 +40,7 @@
  * This objects lifetime is bound to the lifecycle of owning component: when activity or
  * fragment is recreated, new instance of the object is created as well.
  */
-/*
- * === WARNING ===
- *
- * The original source file used for this file is available here:
- * https://android.googlesource.com/platform/frameworks/support/+/HEAD/savedstate/savedstate/src/main/java/androidx/savedstate/SavedStateRegistry.kt
- *
- * The content of this file is a port of the original work with some additions
- *
- */
-package net.smarttuner.kaffeeverde.lifecycle
-
-import net.smarttuner.kaffeeverde.core.Bundle
-import net.smarttuner.kaffeeverde.core.getBundle
-import net.smarttuner.kaffeeverde.core.putBundle
-import net.smarttuner.kaffeeverde.core.putIfAbsent
-import net.smarttuner.kaffeeverde.lifecycle.Lifecycle
-
+@SuppressLint("RestrictedApi")
 class SavedStateRegistry internal constructor() {
     private val components = mutableMapOf<String, SavedStateProvider>()
     private var attached = false
@@ -47,6 +51,7 @@ class SavedStateRegistry internal constructor() {
      *
      * [isRestored] == true if state was restored
      */
+    @get: MainThread
     var isRestored = false
         private set
     private var recreatorProvider: Recreator.SavedStateProvider? = null
@@ -71,7 +76,7 @@ class SavedStateRegistry internal constructor() {
      * @param key a key with which [SavedStateProvider] was previously registered.
      * @return `S` with the previously saved state or {@code null}
      */
-    
+    @MainThread
     fun consumeRestoredStateForKey(key: String): Bundle? {
         check(isRestored) {
             ("You can consumeRestoredStateForKey " +
@@ -104,7 +109,7 @@ class SavedStateRegistry internal constructor() {
      * @param key      a key with which returned saved state will be associated
      * @param provider savedStateProvider to get saved state.
      */
-    
+    @MainThread
     fun registerSavedStateProvider(
         key: String,
         provider: SavedStateProvider
@@ -140,7 +145,7 @@ class SavedStateRegistry internal constructor() {
      *
      * @param key a key with which a component was previously registered.
      */
-    
+    @MainThread
     fun unregisterSavedStateProvider(key: String) {
         components.remove(key)
     }
@@ -174,25 +179,17 @@ class SavedStateRegistry internal constructor() {
      * @throws IllegalArgumentException if you try to call if after [Lifecycle.Event.ON_STOP]
      *                               was dispatched
      */
-    
-//    fun runOnNextRecreation(clazz: KClass<out AutoRecreated>) {
-//        check(isAllowingSavingState) { "Can not perform this action after onSaveInstanceState" }
-//        recreatorProvider = recreatorProvider ?: Recreator.SavedStateProvider(this)
-//        try {
-//            clazz.getDeclaredConstructor()
-//        } catch (e: NoSuchMethodException) {
-//            throw IllegalArgumentException(
-//                "Class ${clazz.simpleName} must have " +
-//                        "default constructor in order to be automatically recreated", e
-//            )
-//        }
-//        recreatorProvider?.add(clazz.name)
-//    }
+    @MainThread
+    fun runOnNextRecreation(clazz: KClass<out AutoRecreated>) {
+        check(isAllowingSavingState) { "Can not perform this action after onSaveInstanceState" }
+        recreatorProvider = recreatorProvider ?: Recreator.SavedStateProvider(this)
+        recreatorProvider?.add(clazz.simpleName!!)
+    }
     /**
      * An interface for an owner of this [SavedStateRegistry] to attach this
      * to a [Lifecycle].
      */
-    
+    @MainThread
     internal fun performAttach(lifecycle: Lifecycle) {
         check(!attached) { "SavedStateRegistry was already attached." }
         lifecycle.addObserver(object : LifecycleEventObserver {
@@ -201,7 +198,8 @@ class SavedStateRegistry internal constructor() {
                     isAllowingSavingState = true
                 } else if (event == Lifecycle.Event.ON_STOP) {
                     isAllowingSavingState = false
-                }            }
+                }
+            }
         })
         attached = true
     }
@@ -209,7 +207,7 @@ class SavedStateRegistry internal constructor() {
      * An interface for an owner of this [SavedStateRegistry] to restore saved state.
      *
      */
-    
+    @MainThread
     internal fun performRestore(savedState: Bundle?) {
         check(attached) {
             ("You must call performAttach() before calling " +
@@ -225,16 +223,12 @@ class SavedStateRegistry internal constructor() {
      * merge with unconsumed state.
      *
      * @param outBundle Bundle in which to place a saved state
-     * @suppress INACCESSIBLE_TYPE iterator is used strictly as Iterator, does not access
-     * inaccessible type IteratorWithAdditions
      */
-    
-    @Suppress("INACCESSIBLE_TYPE")
-    fun performSave(outBundle: Bundle) {
+    @MainThread
+    internal fun performSave(outBundle: Bundle) {
         val components = Bundle()
-        val restoredState = restoredState
-        if (restoredState != null) {
-            components.putAll(restoredState)
+        restoredState?.let {
+            components.putAll(it)
         }
         val it: Iterator<Map.Entry<String, SavedStateProvider>> =
             this.components.iterator()

@@ -1,4 +1,10 @@
 /*
+ * === WARNING ===
+ *
+ * The original source file used for this file is available here:
+ * https://android.googlesource.com/platform/frameworks/support/+/HEAD/navigation/navigation-runtime/src/main/java/androidx/navigation/NavHostController.kt
+ */
+/*
  * Copyright 2019 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,17 +19,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * === WARNING ===
- *
- * The original source file used for this file is available here:
- * https://android.googlesource.com/platform/frameworks/support/+/HEAD/navigation/navigation-runtime/src/main/java/androidx/navigation/NavHostController.kt
- */
 package net.smarttuner.kaffeeverde.navigation
 
+import net.smarttuner.kaffeeverde.activity.OnBackPressedDispatcher
 import net.smarttuner.kaffeeverde.lifecycle.LifecycleOwner
 import net.smarttuner.kaffeeverde.lifecycle.ViewModelStore
-
 /**
  * Subclass of [NavController] that offers additional APIs for use by a
  * [NavHost] to connect the NavController to external dependencies.
@@ -32,7 +32,7 @@ import net.smarttuner.kaffeeverde.lifecycle.ViewModelStore
  * directly from a navigation host via [NavHost.getNavController] or by using one of
  * the utility methods on the [Navigation] class.
  */
-open class NavHostController
+public open class NavHostController
 /**
  * Construct a new controller for a given [Context] suitable for use in a
  * [NavHost]. Controllers should not be used outside of their context and retain a
@@ -53,10 +53,38 @@ open class NavHostController
      * @param owner The [LifecycleOwner] associated with the containing [NavHost].
      * @see NavHostController.setOnBackPressedDispatcher
      */
-    final override fun setLifecycleOwner(owner: LifecycleOwner) {
+    public final override fun setLifecycleOwner(owner: LifecycleOwner) {
         super.setLifecycleOwner(owner)
     }
-
+    /**
+     * Sets the host's [OnBackPressedDispatcher]. If set, NavController will
+     * register a [onBackPressedCallback] to handle system Back button events.
+     *
+     * You must explicitly called [setLifecycleOwner] before calling this
+     * method as the owner set there will be used as the [LifecycleOwner] for registering
+     * the [onBackPressedCallback].
+     *
+     * You can dynamically enable and disable whether the NavController should handle the
+     * system Back button events by calling [enableOnBackPressed].
+     *
+     * @param dispatcher The [OnBackPressedDispatcher] associated with the containing
+     * [NavHost].
+     * @throws IllegalStateException if you have not called
+     * [setLifecycleOwner] before calling this method.
+     * @see NavHostController.setLifecycleOwner
+     */
+    public final override fun setOnBackPressedDispatcher(dispatcher: OnBackPressedDispatcher) {
+        super.setOnBackPressedDispatcher(dispatcher)
+    }
+    /**
+     * Set whether the NavController should handle the system Back button events via the
+     * registered [OnBackPressedDispatcher].
+     *
+     * @param enabled True if the NavController should handle system Back button events.
+     */
+    public final override fun enableOnBackPressed(enabled: Boolean) {
+        super.enableOnBackPressed(enabled)
+    }
     /**
      * Sets the host's ViewModelStore used by the NavController to store ViewModels at the
      * navigation graph level. This is required to call [getViewModelStoreOwner] and
@@ -69,7 +97,7 @@ open class NavHostController
      * @throws IllegalStateException if this method is called when graph was already set via
      * [setGraph] or similar methods.
      */
-    final override fun setViewModelStore(viewModelStore: ViewModelStore) {
+    public final override fun setViewModelStore(viewModelStore: ViewModelStore) {
         super.setViewModelStore(viewModelStore)
     }
 }

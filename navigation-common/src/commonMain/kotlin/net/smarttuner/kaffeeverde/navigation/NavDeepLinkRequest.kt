@@ -30,42 +30,50 @@ import net.smarttuner.kaffeeverde.core.Uri
  * [NavDestination] and to navigate to a [NavDestination] with a matching
  * [NavDeepLink].
  */
-public open class NavDeepLinkRequest {
-    public open val uri: Uri?
-    public open val action: String?
+public open class NavDeepLinkRequest
+/**
+ * The mimeType from the NavDeepLinkRequest.
+ *
+ * @see NavDeepLink.mimeType
+ */
+/**
+ * The action from the NavDeepLinkRequest.
+ *
+ * @see NavDeepLink.action
+ */
+/**
+ * The uri from the NavDeepLinkRequest.
+ *
+ * @see NavDeepLink.uriPattern
+ */
+/** @suppress */(
+    /**
+     * The uri from the NavDeepLinkRequest.
+     *
+     * @see NavDeepLink.uriPattern
+     */
+    public open val uri: Uri,
+    /**
+     * The action from the NavDeepLinkRequest.
+     *
+     * @see NavDeepLink.action
+     */
+    public open val action: String?,
+    /**
+     * The mimeType from the NavDeepLinkRequest.
+     *
+     * @see NavDeepLink.mimeType
+     */
     public open val mimeType: String?
-    /** @suppress */
-    
-    constructor(
-        /**
-         * The uri from the NavDeepLinkRequest.
-         *
-         * @see NavDeepLink.uriPattern
-         */
-        uri: Uri?,
-        /**
-         * The action from the NavDeepLinkRequest.
-         *
-         * @see NavDeepLink.action
-         */
-        action: String?,
-        /**
-         * The mimeType from the NavDeepLinkRequest.
-         *
-         * @see NavDeepLink.mimeType
-         */
-        mimeType: String?
-    ) { this.uri = uri; this.action = action; this.mimeType = mimeType }
+) {
     /** @suppress */
     
     public override fun toString(): String {
         val sb = StringBuilder()
         sb.append("NavDeepLinkRequest")
         sb.append("{")
-        if (uri != null) {
-            sb.append(" uri=")
-            sb.append(uri.toString())
-        }
+        sb.append(" uri=")
+        sb.append(uri.toString())
         if (action != null) {
             sb.append(" action=")
             sb.append(action)
@@ -133,6 +141,8 @@ public open class NavDeepLinkRequest {
          * @return the newly constructed NavDeepLinkRequest
          */
         public fun build(): NavDeepLinkRequest {
+            val uri = uri
+            requireNotNull(uri) { "The NavDeepLinkRequest cannot have an empty uri." }
             return NavDeepLinkRequest(uri, action, mimeType)
         }
         public companion object {

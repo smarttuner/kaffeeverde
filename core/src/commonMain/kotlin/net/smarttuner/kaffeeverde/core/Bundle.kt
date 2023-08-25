@@ -37,7 +37,7 @@ import kotlin.jvm.Synchronized
  * @see PersistableBundle
  */
 
-typealias Bundle = HashMap<String?,Any?>
+typealias Bundle = HashMap<String,Any?>
 
 
 
@@ -88,7 +88,7 @@ typealias Bundle = HashMap<String?,Any?>
 
 
     /** {@hide}  */
-    fun Bundle.putObject(key: String?, value: Any?) {
+    fun Bundle.putObject(key: String, value: Any?) {
         when (value) {
             is Byte -> putByte(key, value)
             is Char -> putChar(key, value)
@@ -113,7 +113,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @param value a byte
      */
-    fun Bundle.putByte(key: String?, value: Byte) {
+    fun Bundle.putByte(key: String, value: Byte) {
         this.put(key, value)
     }
 
@@ -124,7 +124,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @param value a char
      */
-    fun Bundle.putChar(key: String?, value: Char) {
+    fun Bundle.putChar(key: String, value: Char) {
         this.put(key, value)
     }
 
@@ -135,7 +135,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @param value a short
      */
-    fun Bundle.putShort(key: String?, value: Short) {
+    fun Bundle.putShort(key: String, value: Short) {
         this[key] = value
     }
 
@@ -146,7 +146,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @param value a float
      */
-    fun Bundle.putFloat(key: String?, value: Float) {
+    fun Bundle.putFloat(key: String, value: Float) {
         this[key] = value
     }
     /**
@@ -156,7 +156,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @param value a double
      */
-    fun Bundle.putDouble(key: String?, value: Double) {
+    fun Bundle.putDouble(key: String, value: Double) {
         this[key] = value
     }
 
@@ -167,7 +167,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @param value a long
      */
-    fun Bundle.putLong(key: String?, value: Long) {
+    fun Bundle.putLong(key: String, value: Long) {
         this[key] = value
     }
 
@@ -178,7 +178,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @param value a Boolean
      */
-    fun Bundle.putBoolean(key: String?, value: Boolean) {
+    fun Bundle.putBoolean(key: String, value: Boolean) {
         this[key] = value
     }
 
@@ -189,7 +189,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @param value a Int
      */
-    fun Bundle.putInt(key: String?, value: Int) {
+    fun Bundle.putInt(key: String, value: Int) {
         this[key] = value
     }
 
@@ -200,7 +200,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @param value a String
      */
-    fun Bundle.putString(key: String?, value: String?) {
+    fun Bundle.putString(key: String, value: String?) {
         this[key] = value
     }
 
@@ -211,7 +211,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @param value a CharSequence, or null
      */
-    fun Bundle.putCharSequence(key: String?, value: CharSequence?) {
+    fun Bundle.putCharSequence(key: String, value: CharSequence?) {
         this[key] = value
     }
 
@@ -242,6 +242,7 @@ typealias Bundle = HashMap<String?,Any?>
 
 
     fun Bundle.getAnyArrayList(key: String): ArrayList<Any>? = this[key] as? ArrayList<Any>?
+    fun Bundle.getAnyArray(key: String): Array<Any>? = this[key] as? Array<Any>?
 
 
     /**
@@ -277,7 +278,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @param value a byte array object, or null
      */
-    fun Bundle.putByteArray(key: String?, value: ByteArray?) {
+    fun Bundle.putByteArray(key: String, value: ByteArray?) {
         this[key] = value
     }
 
@@ -288,7 +289,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @param value a short array object, or null
      */
-    fun Bundle.putShortArray(key: String?, value: ShortArray?) {
+    fun Bundle.putShortArray(key: String, value: ShortArray?) {
         this[key] = value
     }
 
@@ -299,7 +300,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @param value a char array object, or null
      */
-    fun Bundle.putCharArray(key: String?, value: CharArray?) {
+    fun Bundle.putCharArray(key: String, value: CharArray?) {
         this[key] = value
     }
 
@@ -310,7 +311,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @param value a float array object, or null
      */
-    fun Bundle.putFloatArray(key: String?, value: FloatArray?) {
+    fun Bundle.putFloatArray(key: String, value: FloatArray?) {
         this[key] = value
     }
 
@@ -321,7 +322,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @param value a double array object, or null
      */
-    fun Bundle.putDoubleArray(key: String?, value: DoubleArray?) {
+    fun Bundle.putDoubleArray(key: String, value: DoubleArray?) {
         this[key] = value
     }
 
@@ -332,7 +333,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @param value a long array object, or null
      */
-    fun Bundle.putLongArray(key: String?, value: LongArray?) {
+    fun Bundle.putLongArray(key: String, value: LongArray?) {
         this[key] = value
     }
 
@@ -343,7 +344,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @param value a integer array object, or null
      */
-    fun Bundle.putIntArray(key: String?, value: IntArray?) {
+    fun Bundle.putIntArray(key: String, value: IntArray?) {
         this[key] = value
     }
 
@@ -354,7 +355,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @param value a boolean array object, or null
      */
-    fun Bundle.putBooleanArray(key: String?, value: BooleanArray?) {
+    fun Bundle.putBooleanArray(key: String, value: BooleanArray?) {
         this[key] = value
     }
 
@@ -366,15 +367,15 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @param value a Bundle object, or null
      */
-    fun Bundle.putBundle(key: String?, value: HashMap<*,*>?) {
+    fun Bundle.putBundle(key: String, value: HashMap<*,*>?) {
         this[key] = value
     }
 
-    fun Bundle.getBundle(key: String?): Bundle? {
+    fun Bundle.getBundle(key: String): Bundle? {
         return this[key] as Bundle?
     }
 
-    fun Bundle.getByte(key: String?): Byte {
+    fun Bundle.getByte(key: String): Byte {
         return this[key] as Byte
     }
 
@@ -386,7 +387,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param defaultValue Value to return if key does not exist
      * @return a byte value
      */
-    fun Bundle.getByte(key: String?, defaultValue: Byte): Byte {
+    fun Bundle.getByte(key: String, defaultValue: Byte): Byte {
         return this.get(key) as? Byte ?: defaultValue
     }
 
@@ -397,7 +398,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String
      * @return a char value
      */
-    fun Bundle.getChar(key: String?): Char {
+    fun Bundle.getChar(key: String): Char {
         return this[key] as Char 
     }
 
@@ -409,7 +410,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param defaultValue Value to return if key does not exist
      * @return a char value
      */
-    fun Bundle.getChar(key: String?, defaultValue: Char): Char {
+    fun Bundle.getChar(key: String, defaultValue: Char): Char {
         return this[key] as? Char ?: defaultValue 
     }
 
@@ -420,7 +421,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String
      * @return a Int value
      */
-    fun Bundle.getInt(key: String?): Int {
+    fun Bundle.getInt(key: String): Int {
         return this[key] as Int
     }
 
@@ -431,7 +432,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String
      * @return a String value
      */
-    fun Bundle.getString(key: String?): String {
+    fun Bundle.getString(key: String): String {
         return this[key] as String
     }
 
@@ -442,7 +443,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String
      * @return a Boolean value
      */
-    fun Bundle.getBoolean(key: String?): Boolean {
+    fun Bundle.getBoolean(key: String): Boolean {
         return if(this[key]!=null) this[key] as Boolean else false
     }
 
@@ -454,7 +455,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String
      * @return a short value
      */
-    fun Bundle.getShort(key: String?): Short {
+    fun Bundle.getShort(key: String): Short {
         return this[key] as Short
     }
 
@@ -466,7 +467,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param defaultValue Value to return if key does not exist
      * @return a short value
      */
-    fun Bundle.getShort(key: String?, defaultValue: Short): Short {
+    fun Bundle.getShort(key: String, defaultValue: Short): Short {
         return this[key] as? Short ?: defaultValue 
     }
 
@@ -477,7 +478,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String
      * @return a float value
      */
-    fun Bundle.getFloat(key: String?): Float {
+    fun Bundle.getFloat(key: String): Float {
         return this[key] as Float 
     }
 
@@ -489,7 +490,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param defaultValue Value to return if key does not exist
      * @return a float value
      */
-    fun Bundle.getFloat(key: String?, defaultValue: Float): Float {
+    fun Bundle.getFloat(key: String, defaultValue: Float): Float {
         return this[key] as? Float ?: defaultValue 
     }
 
@@ -501,7 +502,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @return a CharSequence value, or null
      */
-        fun Bundle.getCharSequence(key: String?): CharSequence {
+        fun Bundle.getCharSequence(key: String): CharSequence {
         return this[key] as CharSequence 
     }
 
@@ -514,7 +515,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @return a byte[] value, or null
      */
-    fun Bundle.getByteArray(key: String?): ByteArray {
+    fun Bundle.getByteArray(key: String): ByteArray {
         return this[key] as ByteArray 
     }
 
@@ -526,7 +527,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @return a IntArray value, or null
      */
-    fun Bundle.getIntArray(key: String?): IntArray? {
+    fun Bundle.getIntArray(key: String): IntArray? {
         return this[key] as? IntArray?
     }
 
@@ -538,7 +539,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @return a short[] value, or null
      */
-        fun Bundle.getShortArray(key: String?): ShortArray {
+        fun Bundle.getShortArray(key: String): ShortArray {
         return this[key] as ShortArray 
     }
 
@@ -550,7 +551,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @return a char[] value, or null
      */
-        fun Bundle.getCharArray(key: String?): CharArray {
+        fun Bundle.getCharArray(key: String): CharArray {
         return this[key] as CharArray 
     }
 
@@ -562,7 +563,7 @@ typealias Bundle = HashMap<String?,Any?>
      * @param key a String, or null
      * @return a float[] value, or null
      */
-        fun Bundle.getFloatArray(key: String?): FloatArray {
+        fun Bundle.getFloatArray(key: String): FloatArray {
         return this[key] as FloatArray 
     }
 

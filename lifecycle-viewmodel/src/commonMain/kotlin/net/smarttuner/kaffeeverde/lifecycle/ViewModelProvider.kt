@@ -25,10 +25,12 @@
  */
 package net.smarttuner.kaffeeverde.lifecycle
 
+import net.smarttuner.kaffeeverde.lifecycle.ViewModelProvider.NewInstanceFactory.Companion.VIEW_MODEL_KEY
 import net.smarttuner.kaffeeverde.lifecycle.ViewModelProvider.NonAndroidViewModelFactory.Companion.DEFAULT_KEY
 import net.smarttuner.kaffeeverde.lifecycle.ViewModelProvider.NonAndroidViewModelFactory.Companion.defaultFactory
 import net.smarttuner.kaffeeverde.lifecycle.viewmodel.CreationExtras
 import net.smarttuner.kaffeeverde.lifecycle.viewmodel.InitializerViewModelFactory
+import net.smarttuner.kaffeeverde.lifecycle.viewmodel.MutableCreationExtras
 import net.smarttuner.kaffeeverde.lifecycle.viewmodel.ViewModelInitializer
 import kotlin.reflect.KClass
 
@@ -95,7 +97,7 @@ constructor(
      */
     
     open class OnRequeryFactory {
-        open fun onRequery(viewModel: ViewModel?) {}
+        open fun onRequery(viewModel: ViewModel) {}
     }
     /**
      * Creates `ViewModelProvider`. This will create `ViewModels`
@@ -139,7 +141,7 @@ constructor(
      * @throws IllegalArgumentException if the given [modelClass] is local or anonymous class.
      */
     
-    open operator fun <T : ViewModel> get(modelClass: KClass<T>): T? {
+    open operator fun <T : ViewModel> get(modelClass: KClass<T>): T {
         val canonicalName = modelClass.simpleName
             ?: throw IllegalArgumentException("Local and anonymous classes can not be ViewModels")
         return get("$DEFAULT_KEY:$canonicalName", modelClass)
@@ -159,10 +161,10 @@ constructor(
      */
     @Suppress("UNCHECKED_CAST")
 
-    open operator fun <T : ViewModel> get(key: String, modelClass: KClass<T>): T? {
+    open operator fun <T : ViewModel> get(key: String, modelClass: KClass<T>): T {
         val viewModel = store[key]
         if (modelClass.isInstance(viewModel)) {
-            (factory as? OnRequeryFactory)?.onRequery(viewModel)
+            (factory as? OnRequeryFactory)?.onRequery(viewModel!!)
             return viewModel as T
         } else {
             @Suppress("ControlFlowWithEmptyBody")
@@ -170,7 +172,12 @@ constructor(
                 // TODO: log a warning.
             }
         }
-        return null
+        val extras = MutableCreationExtras(defaultCreationExtras)
+        extras[VIEW_MODEL_KEY] = key
+        // AGP has some desugaring issues associated with compileOnly dependencies so we need to
+        // fall back to the other create method to keep from crashing.
+        return factory.create(modelClass, extras).also { store.put(key, it) }
+
 //        throw NotImplementedError("Kotlin/Native does not support full reflection.")
 //        val extras = MutableCreationExtras(defaultCreationExtras)
 //        extras[VIEW_MODEL_KEY] = key

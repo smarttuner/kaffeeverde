@@ -61,7 +61,7 @@ public fun rememberNavController(
 private fun createNavController() =
     NavHostController().apply {
         navigatorProvider.addNavigator(ComposeNavigator())
-//        navigatorProvider.addNavigator(DialogNavigator())
+        navigatorProvider.addNavigator(DialogNavigator())
     }
 /**
  * Saver to save and restore the NavController across config change and process death.

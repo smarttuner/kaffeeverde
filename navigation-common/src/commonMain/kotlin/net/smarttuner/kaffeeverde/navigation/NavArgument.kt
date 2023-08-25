@@ -21,6 +21,7 @@
  */
 package net.smarttuner.kaffeeverde.navigation
 
+import androidx.annotation.RestrictTo
 import net.smarttuner.kaffeeverde.core.Bundle
 
 /**
@@ -58,15 +59,13 @@ public class NavArgument internal constructor(
      * @return The default value assigned to this argument.
      */
     public val defaultValue: Any?
-    /** @suppress */
-    
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public fun putDefaultValue(name: String, bundle: Bundle) {
         if (isDefaultValuePresent) {
             type.put(bundle, name, defaultValue)
         }
     }
-    /** @suppress */
-    
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     @Suppress("DEPRECATION")
     public fun verify(name: String, bundle: Bundle): Boolean {
         if (!isNullable && bundle.containsKey(name) && bundle[name] == null) {
@@ -81,7 +80,7 @@ public class NavArgument internal constructor(
     }
     override fun toString(): String {
         val sb = StringBuilder()
-//        sb.append(javaClass.simpleName)
+        sb.append(this::class.simpleName)
         sb.append(" Type: $type")
         sb.append(" Nullable: $isNullable")
         if (isDefaultValuePresent) {
@@ -91,7 +90,7 @@ public class NavArgument internal constructor(
     }
     public override fun equals(other: Any?): Boolean {
         if (this === other) return true
-//        if (other == null || javaClass != other.javaClass) return false
+        if (other == null || this::class != other::class) return false
         val that = other as NavArgument
         if (isNullable != that.isNullable) return false
         if (isDefaultValuePresent != that.isDefaultValuePresent) return false
@@ -173,4 +172,21 @@ public class NavArgument internal constructor(
         this.defaultValue = defaultValue
         isDefaultValuePresent = defaultValuePresent
     }
+}
+/**
+ * Returns a list of NavArgument keys where required NavArguments with that key
+ * returns false for the predicate `isArgumentMissing`.
+ *
+ * @param [isArgumentMissing] predicate that returns true if the key of a required NavArgument
+ * is missing from a Bundle that is expected to contain it.
+ */
+internal fun Map<String, NavArgument?>.missingRequiredArguments(
+    isArgumentMissing: (key: String) -> Boolean
+): List<String> {
+    val requiredArgumentKeys = filterValues {
+        if (it != null) {
+            !it.isNullable && !it.isDefaultValuePresent
+        } else false
+    }.keys
+    return requiredArgumentKeys.filter { key -> isArgumentMissing(key) }
 }

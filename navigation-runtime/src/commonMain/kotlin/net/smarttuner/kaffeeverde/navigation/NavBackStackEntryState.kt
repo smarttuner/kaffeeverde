@@ -26,28 +26,27 @@ import net.smarttuner.kaffeeverde.core.Serializable
 import net.smarttuner.kaffeeverde.lifecycle.Lifecycle
 
 
-data class NavBackStackEntryState(val id: String,
-                                  val destinationId: Int,
-                                  val args: Bundle?,
-                                  val savedState: Bundle):
-    Serializable {
+internal class NavBackStackEntryState(entry: NavBackStackEntry) : Serializable {
+    val id: String
+    val destinationId: Int
+    val args: Bundle?
+    val savedState: Bundle
 
-    constructor(entry: NavBackStackEntry) : this(
-        entry.id,
-        entry.destination.id,
-        entry.arguments,
-        Bundle().apply { entry.saveState(this) }
-    )
-
-    internal fun instantiate(
+    init {
+        id = entry.id
+        destinationId = entry.destination.id
+        args = entry.arguments
+        savedState = Bundle()
+        entry.saveState(savedState)
+    }
+    fun instantiate(
         destination: NavDestination,
         hostLifecycleState: Lifecycle.State,
         viewModel: NavControllerViewModel?
     ): NavBackStackEntry {
         return NavBackStackEntry.create(
             destination, args,
-            hostLifecycleState,
-            viewModel,
+            hostLifecycleState, viewModel,
             id, savedState
         )
     }

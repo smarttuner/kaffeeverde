@@ -8,7 +8,7 @@ group = Versions.KAFFEEVERDE_LIB_GROUP
 version = Versions.KAFFEEVERDE_CORE
 
 kotlin {
-    android {
+    androidTarget {
         publishLibraryVariants("release", "debug")
     }
     jvm("desktop") {
@@ -23,10 +23,13 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                api(libs.kotlinStdlib)
+                api(libs.kotlinStdlibCommon)
                 api(Deps.Ktor.Core)
                 api(Deps.UUID.UUID)
                 api(Deps.Napier.Napier)
                 implementation(Deps.DitchoomBuffer.DitchoomBuffer)
+                api("androidx.collection:collection:1.3.0-beta01")
             }
         }
         val commonTest by getting {
@@ -35,7 +38,7 @@ kotlin {
             }
         }
         val androidMain by getting
-        val androidTest by getting
+        val androidUnitTest by getting
         val desktopMain by getting
         val desktopTest by getting
         val iosX64Main by getting

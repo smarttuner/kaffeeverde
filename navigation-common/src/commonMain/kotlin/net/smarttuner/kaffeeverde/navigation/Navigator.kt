@@ -22,6 +22,7 @@
 package net.smarttuner.kaffeeverde.navigation
 
 
+import androidx.annotation.CallSuper
 import net.smarttuner.kaffeeverde.core.Bundle
 
 /**
@@ -82,7 +83,7 @@ public abstract class Navigator<D : NavDestination> {
      * Indicator that this Navigator is actively being used by a [NavController]. This
      * is called when the NavController's state is ready to be restored.
      */
-    
+    @CallSuper
     public open fun onAttach(state: NavigatorState) {
         _state = state
         isAttached = true
