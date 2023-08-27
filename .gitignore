@@ -21,3 +21,4 @@ venv
 .vscode
 /*/build/
 *.hprof
+/gradle/utils/convention/build/*

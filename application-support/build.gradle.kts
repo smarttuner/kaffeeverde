@@ -1,25 +1,14 @@
 plugins {
-    kotlin(multiplatform)
-    id(androidLib)
+    id("net.smarttuner.gradle.kv.android.library")
+    id("net.smarttuner.gradle.kv.commonConfig")
+    id("net.smarttuner.gradle.kv.kotlin.multiplatform")
     id(composePlugin) version Versions.COMPOSE_MULTIPLATFORM_PLUGIN
     id(mavenPublish)
 }
 
-group = Versions.KAFFEEVERDE_LIB_GROUP
 version = Versions.KAFFEEVERDE_APPLICATION_SUPPORT
 
 kotlin {
-    androidTarget {
-        publishLibraryVariants("release", "debug")
-    }
-    jvm("desktop") {
-        compilations.all {
-            kotlinOptions.jvmTarget = "11"
-        }
-    }
-    ios()
-    iosSimulatorArm64()
-
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -53,14 +42,5 @@ kotlin {
 }
 
 android {
-    compileSdk = Versions.ANDROID_COMPILE_SDK
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    defaultConfig {
-        minSdk = Versions.ANDROID_MIN_SDK
-        targetSdk = Versions.ANDROID_TARGET_SDK
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
+    namespace = "net.smarttuner.kaffeeverde.application"
 }

@@ -1,14 +1,8 @@
-const val androidPlugin = "android"
-const val cocoapods = "native.cocoapods"
-const val androidLib = "com.android.library"
-const val multiplatform = "multiplatform"
 const val mavenPublish = "maven-publish"
 const val composePlugin = "org.jetbrains.compose"
-const val kotlinSerialization = "org.jetbrains.kotlin.plugin.serialization"
 
 object Versions {
-    const val KAFFEEVERDE_LIB_GROUP = "net.smarttuner.kaffeeverde"
-    const val KAFFEEVERDE_CORE = "2.7.0-dev50"
+    const val KAFFEEVERDE_CORE = "2.7.0-dev53"
     const val KAFFEEVERDE_LIFECYCLE = KAFFEEVERDE_CORE
     const val KAFFEEVERDE_LIFECYCLE_VIEWMODEL = KAFFEEVERDE_CORE
     const val KAFFEEVERDE_LIFECYCLE_VIEWMODEL_SAVEDSTATE = KAFFEEVERDE_CORE
@@ -18,10 +12,6 @@ object Versions {
     const val KAFFEEVERDE_NAVIGATION_RUNTIME = KAFFEEVERDE_CORE
     const val KAFFEEVERDE_NAVIGATION_COMPOSE = KAFFEEVERDE_CORE
     const val KAFFEEVERDE_APPLICATION_SUPPORT = KAFFEEVERDE_CORE
-
-    const val ANDROID_MIN_SDK = 24
-    const val ANDROID_TARGET_SDK = 32
-    const val ANDROID_COMPILE_SDK = 32
 
     const val KOTLIN = "1.9.0"
     const val KOTLIN_GRADLE_PLUGIN = KOTLIN
@@ -33,7 +23,7 @@ object Versions {
     const val DITCHOOM_BUFFER = "1.0.86"
 
     const val ANDROID_X_ACTIVITY= "1.7.0"
-    const val COMPOSE_MULTIPLATFORM_PLUGIN = "1.5.0-beta01"
+    const val COMPOSE_MULTIPLATFORM_PLUGIN = "1.5.0-rc06"
 
     const val COMPOSE = "1.5.0"
 

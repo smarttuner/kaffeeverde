@@ -1,4 +1,6 @@
 pluginManagement {
+    includeBuild("gradle/utils")
+
     repositories {
         mavenLocal()
         gradlePluginPortal()

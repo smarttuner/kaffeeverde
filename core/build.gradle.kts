@@ -1,25 +1,13 @@
 plugins {
-    kotlin(multiplatform)
-    id(androidLib)
     id(mavenPublish)
+    id("net.smarttuner.gradle.kv.android.library")
+    id("net.smarttuner.gradle.kv.commonConfig")
+    id("net.smarttuner.gradle.kv.kotlin.multiplatform")
 }
 
-group = Versions.KAFFEEVERDE_LIB_GROUP
 version = Versions.KAFFEEVERDE_CORE
 
 kotlin {
-    androidTarget {
-        publishLibraryVariants("release", "debug")
-    }
-    jvm("desktop") {
-        compilations.all {
-            kotlinOptions.jvmTarget = "11"
-        }
-    }
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
-    
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -29,7 +17,7 @@ kotlin {
                 api(Deps.UUID.UUID)
                 api(Deps.Napier.Napier)
                 implementation(Deps.DitchoomBuffer.DitchoomBuffer)
-                api("androidx.collection:collection:1.3.0-beta01")
+                api(libs.collection)
             }
         }
         val commonTest by getting {
@@ -44,7 +32,7 @@ kotlin {
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
-        val iosMain by creating {
+        val iosMain by getting {
             dependsOn(commonMain)
             iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
@@ -53,7 +41,7 @@ kotlin {
         val iosX64Test by getting
         val iosArm64Test by getting
         val iosSimulatorArm64Test by getting
-        val iosTest by creating {
+        val iosTest by getting {
             dependsOn(commonTest)
             iosX64Test.dependsOn(this)
             iosArm64Test.dependsOn(this)
@@ -63,10 +51,5 @@ kotlin {
 }
 
 android {
-    compileSdk = Versions.ANDROID_COMPILE_SDK
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    defaultConfig {
-        minSdk = Versions.ANDROID_MIN_SDK
-        targetSdk = Versions.ANDROID_TARGET_SDK
-    }
+    namespace = "net.smarttuner.kaffeeverde.core"
 }

@@ -1,4 +1,9 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+plugins {
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.cacheFixPlugin) apply false
+}
+
 buildscript {
     repositories {
         mavenLocal()
@@ -11,7 +16,6 @@ buildscript {
         classpath(Deps.kotlin_gradle_plugin)
         classpath(Deps.android_gradle_plugin)
         classpath(Deps.kotlin_serialization_gradle_plugin)
-
     }
 }
 
@@ -37,5 +41,6 @@ allprojects {
 }
 
 tasks.register("clean", Delete::class) {
-    delete(rootProject.buildDir)
+    delete(rootProject.layout.buildDirectory)
 }
+
