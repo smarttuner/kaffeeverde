@@ -28,6 +28,10 @@ gradlePlugin {
             id = "net.smarttuner.gradle.kv.commonConfig"
             implementationClass = "net.smarttuner.kv.gradle.CommonPlugin"
         }
+        register("configmaven") {
+            id = "net.smarttuner.gradle.kv.configmaven"
+            implementationClass = "net.smarttuner.kv.gradle.ConfigMavenPlugin"
+        }
     }
 }
 

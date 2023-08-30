@@ -2,7 +2,7 @@ plugins {
     id("net.smarttuner.gradle.kv.android.library")
     id("net.smarttuner.gradle.kv.commonConfig")
     id("net.smarttuner.gradle.kv.kotlin.multiplatform")
-    id(mavenPublish)
+    id("net.smarttuner.gradle.kv.configmaven")
 }
 
 version = Versions.KAFFEEVERDE_LIFECYCLE_VIEWMODEL

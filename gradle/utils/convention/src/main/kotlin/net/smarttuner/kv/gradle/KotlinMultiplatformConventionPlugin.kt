@@ -3,7 +3,6 @@
 
 package net.smarttuner.kv.gradle
 
-import com.android.build.gradle.BaseExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.configurationcache.extensions.capitalized

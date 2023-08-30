@@ -3,7 +3,7 @@ plugins {
     id("net.smarttuner.gradle.kv.commonConfig")
     id("net.smarttuner.gradle.kv.kotlin.multiplatform")
     id(composePlugin) version Versions.COMPOSE_MULTIPLATFORM_PLUGIN
-    id(mavenPublish)
+    id("net.smarttuner.gradle.kv.configmaven")
 }
 
 version = Versions.KAFFEEVERDE_NAVIGATION_COMPOSE

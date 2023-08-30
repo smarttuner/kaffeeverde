@@ -13,7 +13,6 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                 apply("com.android.library")
                 apply("org.gradle.android.cache-fix")
             }
-
             configureAndroid()
         }
     }

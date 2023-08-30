@@ -1,5 +1,5 @@
 plugins {
-    id(mavenPublish)
+    id("net.smarttuner.gradle.kv.configmaven")
     id("net.smarttuner.gradle.kv.android.library")
     id("net.smarttuner.gradle.kv.commonConfig")
     id("net.smarttuner.gradle.kv.kotlin.multiplatform")

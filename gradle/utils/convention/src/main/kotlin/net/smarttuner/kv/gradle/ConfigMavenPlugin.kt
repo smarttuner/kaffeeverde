@@ -1,5 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
 package net.smarttuner.kv.gradle
 
+import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
@@ -7,15 +9,22 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
 import java.net.URI
 
-fun Project.publishToGitHubPackages() {
-    plugins.apply("maven-publish")
+class ConfigMavenPlugin : Plugin<Project> {
+    override fun apply(target: Project) = with(target) {
+        with(pluginManager) {
+            apply("maven-publish")
+        }
+        configureToGitHubPackages()
+    }
+}
 
+private fun Project.configureToGitHubPackages() {
     extensions.configure<PublishingExtension> {
         publications.withType<MavenPublication>().configureEach {
             repositories {
                 maven {
-                    name = "GitHubPackages"
-                    url = URI("https://maven.pkg.github.com/octocat/hello-world")
+                    name = "KaffeeVerde"
+                    url = URI("https://maven.pkg.github.com/smarttuner/kaffeeverde")
                     credentials {
                         username = System.getenv("GITHUB_ACTOR")
                         password = System.getenv("GITHUB_TOKEN")
