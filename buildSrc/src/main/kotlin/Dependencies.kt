@@ -2,7 +2,7 @@ const val mavenPublish = "maven-publish"
 const val composePlugin = "org.jetbrains.compose"
 
 object Versions {
-    const val KAFFEEVERDE_CORE = "2.7.0-dev55"
+    const val KAFFEEVERDE_CORE = "2.7.0-dev56"
     const val KAFFEEVERDE_LIFECYCLE = KAFFEEVERDE_CORE
     const val KAFFEEVERDE_LIFECYCLE_VIEWMODEL = KAFFEEVERDE_CORE
     const val KAFFEEVERDE_LIFECYCLE_VIEWMODEL_SAVEDSTATE = KAFFEEVERDE_CORE
