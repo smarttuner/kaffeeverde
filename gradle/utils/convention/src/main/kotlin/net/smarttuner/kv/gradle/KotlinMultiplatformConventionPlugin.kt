@@ -46,24 +46,6 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
                     baseName = path.substring(1).replace(':', '-')
                 }
             }
-            val publicationsFromMainHost =
-                listOf(
-                    jvm(),
-                    iosX64(),
-                    iosArm64(),
-                    iosSimulatorArm64()
-                ).map { it.name } + "kotlinMultiplatform"
-            publishing {
-                publications {
-                    matching { it.name in publicationsFromMainHost }.all {
-                        val targetPublication = this@all
-                        tasks.withType<AbstractPublishToMaven>()
-                            .matching { it.publication == targetPublication }
-                            .configureEach { onlyIf { findProperty("isMainHost") == "true" } }
-                    }
-                }
-            }
-
             targets.withType<KotlinNativeTarget>().configureEach {
                 binaries.all {
                     // Add linker flag for SQLite. See:
