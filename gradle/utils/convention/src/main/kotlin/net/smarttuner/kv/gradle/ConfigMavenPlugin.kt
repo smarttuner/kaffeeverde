@@ -19,7 +19,7 @@ class ConfigMavenPlugin : Plugin<Project> {
 }
 
 private fun Project.configureToGitHubPackages() {
-    extensions.configure<PublishingExtension> {
+    publishing {
         publications.withType<MavenPublication>().configureEach {
             repositories {
                 maven {
@@ -34,3 +34,5 @@ private fun Project.configureToGitHubPackages() {
         }
     }
 }
+
+internal fun Project.publishing(action: PublishingExtension.() -> Unit) = extensions.configure<PublishingExtension>(action)

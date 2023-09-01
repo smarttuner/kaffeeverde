@@ -5,6 +5,7 @@ package net.smarttuner.kv.gradle
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
 import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
@@ -43,6 +44,23 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
             ).forEach { target ->
                 target.binaries.framework {
                     baseName = path.substring(1).replace(':', '-')
+                }
+            }
+            val publicationsFromMainHost =
+                listOf(
+                    jvm(),
+                    iosX64(),
+                    iosArm64(),
+                    iosSimulatorArm64()
+                ).map { it.name } + "kotlinMultiplatform"
+            publishing {
+                publications {
+                    matching { it.name in publicationsFromMainHost }.all {
+                        val targetPublication = this@all
+                        tasks.withType<AbstractPublishToMaven>()
+                            .matching { it.publication == targetPublication }
+                            .configureEach { onlyIf { findProperty("isMainHost") == "true" } }
+                    }
                 }
             }
 
@@ -103,4 +121,4 @@ private fun Project.addKspDependencyForAllTargets(
     }
 }
 
-private fun Project.kotlin(action: KotlinMultiplatformExtension.() -> Unit) = extensions.configure<KotlinMultiplatformExtension>(action)
+internal fun Project.kotlin(action: KotlinMultiplatformExtension.() -> Unit) = extensions.configure<KotlinMultiplatformExtension>(action)
