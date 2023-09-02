@@ -49,14 +49,14 @@ private fun Project.configureToGitHubPackages() {
     publishing {
         publications.withType<MavenPublication>().configureEach {
             setupPublicationPom(project)
-            repositories {
-                maven {
-                    name = project.name
-                    url = URI("https://maven.pkg.github.com/smarttuner/kaffeeverde")
-                    credentials {
-                        username = System.getenv("GITHUB_ACTOR")
-                        password = System.getenv("GITHUB_TOKEN")
-                    }
+        }
+        repositories {
+            maven {
+                name = "KaffeeVerde"
+                url = URI("https://maven.pkg.github.com/smarttuner/kaffeeverde")
+                credentials {
+                    username = System.getenv("GITHUB_ACTOR")
+                    password = System.getenv("GITHUB_TOKEN")
                 }
             }
         }
