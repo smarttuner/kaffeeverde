@@ -24,6 +24,7 @@ private fun Project.configureToGitHubPackages() {
     kotlin{
         val publicationsFromMainHost =
             listOf(
+                androidTarget(),
                 jvm("desktop"),
                 iosX64(),
                 iosArm64(),
