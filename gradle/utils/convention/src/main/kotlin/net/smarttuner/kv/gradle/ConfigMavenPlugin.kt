@@ -51,7 +51,7 @@ private fun Project.configureToGitHubPackages() {
             setupPublicationPom(project)
             repositories {
                 maven {
-                    name = "KaffeeVerde"
+                    name = project.name
                     url = URI("https://maven.pkg.github.com/smarttuner/kaffeeverde")
                     credentials {
                         username = System.getenv("GITHUB_ACTOR")
