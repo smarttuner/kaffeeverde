@@ -7,6 +7,7 @@ plugins {
 }
 
 version = Versions.KAFFEEVERDE_APPLICATION_SUPPORT
+description = "KaffeeVerde Application Support"
 
 kotlin {
     sourceSets {

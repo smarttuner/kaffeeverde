@@ -9,9 +9,7 @@ plugins {
 version = Versions.KAFFEEVERDE_COMPOSE_HELPER
 
 kotlin {
-    androidTarget {
-        publishLibraryVariants("release", "debug")
-    }
+    androidTarget()
     jvm("desktop") {
         compilations.all {
             kotlinOptions.jvmTarget = "11"

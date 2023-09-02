@@ -39,10 +39,15 @@ private fun Project.configureToGitHubPackages() {
                 }
             }
         }
-
+        if (pluginManager.hasPlugin("com.android.library")) {
+            androidTarget{
+                publishLibraryVariants("release", "debug")
+            }
+        }
     }
     publishing {
         publications.withType<MavenPublication>().configureEach {
+            setupPublicationPom(project)
             repositories {
                 maven {
                     name = "KaffeeVerde"
@@ -53,6 +58,36 @@ private fun Project.configureToGitHubPackages() {
                     }
                 }
             }
+        }
+    }
+}
+
+internal fun MavenPublication.setupPublicationPom(
+    project: Project) {
+    pom {
+        name.set(project.name)
+        description.set(project.description)
+        url.set("https://github.com/smarttuner/kaffeeverde")
+
+        licenses {
+            license {
+                name.set("Apache License, Version 2.0")
+                url.set("https://www.apache.org/licenses/LICENSE-2.0")
+            }
+        }
+
+        developers {
+            developer {
+                id.set("smarttuner")
+                name.set("Daniele Saitta")
+                email.set("opensource@smarttuner.net")
+            }
+        }
+
+        scm {
+            url.set("https://github.com/smarttuner/kaffeeverde")
+            connection.set("scm:git:git://github.com/smarttuner/kaffeeverde.git")
+            developerConnection.set("scm:git:git://github.com/smarttuner/kaffeeverde.git")
         }
     }
 }

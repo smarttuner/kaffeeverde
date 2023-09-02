@@ -31,11 +31,7 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
                     kotlinOptions.jvmTarget = "11"
                 }
             }
-            if (pluginManager.hasPlugin("com.android.library")) {
-                androidTarget{
-                    publishLibraryVariants("release", "debug")
-                }
-            }
+            androidTarget()
 
             listOf(
                 iosX64(),
