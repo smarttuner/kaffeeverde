@@ -1,6 +1,6 @@
 package net.smarttuner.kaffeeverde.core
 
-import kotlin.native.concurrent.AtomicReference
+import kotlin.concurrent.AtomicReference
 
 @SinceKotlin("1.9")
 actual class AtomicReference<T : Any> {

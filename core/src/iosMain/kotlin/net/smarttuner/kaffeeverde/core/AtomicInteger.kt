@@ -1,6 +1,6 @@
 package net.smarttuner.kaffeeverde.core
 
-import kotlin.native.concurrent.AtomicInt
+import kotlin.concurrent.AtomicInt
 
 actual class AtomicInteger actual constructor(value_: Int)  {
 

@@ -16,7 +16,7 @@ class ConfigMavenPlugin : Plugin<Project> {
             apply("maven-publish")
             apply("org.jetbrains.kotlin.multiplatform")
         }
-        configureToGitHubPackages()
+        //configureToGitHubPackages()
     }
 }
 

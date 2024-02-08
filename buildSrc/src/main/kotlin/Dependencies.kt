@@ -2,7 +2,7 @@ const val mavenPublish = "maven-publish"
 const val composePlugin = "org.jetbrains.compose"
 
 object Versions {
-    const val KAFFEEVERDE_CORE = "2.7.0-dev59"
+    const val KAFFEEVERDE_CORE = "2.7.0-dev60"
     const val KAFFEEVERDE_LIFECYCLE = KAFFEEVERDE_CORE
     const val KAFFEEVERDE_LIFECYCLE_VIEWMODEL = KAFFEEVERDE_CORE
     const val KAFFEEVERDE_LIFECYCLE_VIEWMODEL_SAVEDSTATE = KAFFEEVERDE_CORE
@@ -13,7 +13,7 @@ object Versions {
     const val KAFFEEVERDE_NAVIGATION_COMPOSE = KAFFEEVERDE_CORE
     const val KAFFEEVERDE_APPLICATION_SUPPORT = KAFFEEVERDE_CORE
 
-    const val KOTLIN = "1.9.0"
+    const val KOTLIN = "1.9.22"
     const val KOTLIN_GRADLE_PLUGIN = KOTLIN
     const val ANDROID_GRADLE_PLUGIN = "7.3.1"
     const val NAPIER = "2.6.1"
@@ -23,9 +23,9 @@ object Versions {
     const val DITCHOOM_BUFFER = "1.0.86"
 
     const val ANDROID_X_ACTIVITY= "1.7.0"
-    const val COMPOSE_MULTIPLATFORM_PLUGIN = "1.5.0"
+    const val COMPOSE_MULTIPLATFORM_PLUGIN = "1.6.0-beta02"
 
-    const val COMPOSE = "1.5.0"
+    const val COMPOSE = "1.6.0-beta02"
 
     const val kotlin_serialization_gradle_plugin = KOTLIN
 }
