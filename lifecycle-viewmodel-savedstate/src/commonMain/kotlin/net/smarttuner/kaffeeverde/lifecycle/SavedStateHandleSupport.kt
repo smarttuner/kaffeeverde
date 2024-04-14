@@ -24,17 +24,21 @@
  */
 package net.smarttuner.kaffeeverde.lifecycle
 
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider.Companion.VIEW_MODEL_KEY
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.lifecycle.ViewModelProvider
 import net.smarttuner.kaffeeverde.core.Bundle
 import net.smarttuner.kaffeeverde.core.getBundle
 import net.smarttuner.kaffeeverde.core.putBundle
-import net.smarttuner.kaffeeverde.lifecycle.ViewModelProvider.NewInstanceFactory.Companion.VIEW_MODEL_KEY
-import net.smarttuner.kaffeeverde.lifecycle.viewmodel.CreationExtras
-import net.smarttuner.kaffeeverde.lifecycle.viewmodel.initializer
-import net.smarttuner.kaffeeverde.lifecycle.viewmodel.viewModelFactory
 import kotlin.collections.component1
 import kotlin.collections.component2
-import kotlin.collections.forEach
-import kotlin.collections.mutableMapOf
 import kotlin.collections.set
 
 
@@ -52,16 +56,16 @@ private const val SAVED_STATE_KEY = "androidx.lifecycle.internal.SavedStateHandl
 
 fun <T> T.enableSavedStateHandles()
         where T : SavedStateRegistryOwner, T : ViewModelStoreOwner {
-    val currentState = platformLifecycle.currentState
+    val currentState = lifecycle.currentState
     require(
         currentState == Lifecycle.State.INITIALIZED || currentState == Lifecycle.State.CREATED
     )
     // Add the SavedStateProvider used to save SavedStateHandles
     // if we haven't already registered the provider
-    if (platformSavedStateRegistry.getSavedStateProvider(SAVED_STATE_KEY) == null) {
-        val provider = SavedStateHandlesProvider(platformSavedStateRegistry, this)
-        platformSavedStateRegistry.registerSavedStateProvider(SAVED_STATE_KEY, provider)
-        platformLifecycle.addObserver(SavedStateHandleAttacher(provider))
+    if (savedStateRegistry.getSavedStateProvider(SAVED_STATE_KEY) == null) {
+        val provider = SavedStateHandlesProvider(savedStateRegistry, this)
+        savedStateRegistry.registerSavedStateProvider(SAVED_STATE_KEY, provider)
+        lifecycle.addObserver(SavedStateHandleAttacher(provider))
     }
 }
 private fun createSavedStateHandle(
@@ -113,18 +117,14 @@ public fun CreationExtras.createSavedStateHandle(): SavedStateHandle {
 internal val ViewModelStoreOwner.savedStateHandlesVM: SavedStateHandlesVM
     get() {
         val savedStateHandlesVM = SavedStateHandlesVM()
-         val vmp = ViewModelProvider(this, viewModelFactory {
+        val vmp = ViewModelProvider.create(owner = this, factory = viewModelFactory {
             initializer { savedStateHandlesVM }
         })
         var vm = vmp[VIEWMODEL_KEY, SavedStateHandlesVM::class]
-        if(vm==null){
-            vmp[VIEWMODEL_KEY] = savedStateHandlesVM
-            vm = savedStateHandlesVM
-        }
         return vm
     }
 internal val SavedStateRegistryOwner.savedStateHandlesProvider: SavedStateHandlesProvider
-    get() = platformSavedStateRegistry.getSavedStateProvider(SAVED_STATE_KEY) as? SavedStateHandlesProvider
+    get() = savedStateRegistry.getSavedStateProvider(SAVED_STATE_KEY) as? SavedStateHandlesProvider
         ?: throw IllegalStateException("enableSavedStateHandles() wasn't called " +
                 "prior to createSavedStateHandle() call")
 internal class SavedStateHandlesVM : ViewModel() {
@@ -198,7 +198,7 @@ internal class SavedStateHandleAttacher(
         check(event == Lifecycle.Event.ON_CREATE) {
             "Next event must be ON_CREATE, it was $event"
         }
-        source.platformLifecycle.removeObserver(this)
+        source.lifecycle.removeObserver(this)
         // onRecreated() is called after the Lifecycle reaches CREATED, so we
         // eagerly restore the state as part of this call to ensure it consumed
         // even if no ViewModels are actually created during this cycle of the Lifecycle

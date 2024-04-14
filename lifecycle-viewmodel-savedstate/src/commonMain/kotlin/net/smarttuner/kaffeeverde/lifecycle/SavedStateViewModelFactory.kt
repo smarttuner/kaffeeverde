@@ -34,24 +34,15 @@
  */
 package net.smarttuner.kaffeeverde.lifecycle
 
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import net.smarttuner.kaffeeverde.core.Bundle
-import net.smarttuner.kaffeeverde.lifecycle.viewmodel.CreationExtras
 
-class SavedStateViewModelFactory : ViewModelProvider.OnRequeryFactory, ViewModelProvider.Factory {
-    private val factory: ViewModelProvider.Factory
+class SavedStateViewModelFactory: ViewModelProvider.Factory {
+    private val factory: ViewModelProvider.Factory = NonAndroidViewModelFactory()
     private var defaultArgs: Bundle? = null
     private var lifecycle: Lifecycle? = null
     private var savedStateRegistry: SavedStateRegistry? = null
-    /**
-     * Constructs this factory.
-     *
-     * When a factory is constructed this way, a component for which [SavedStateHandle] is
-     * scoped must have called [enableSavedStateHandles].
-     * @see [createSavedStateHandle] docs for more details.
-     */
-    constructor() {
-        factory = ViewModelProvider.NonAndroidViewModelFactory()
-    }
     /**
      * Creates [SavedStateViewModelFactory].
      *
@@ -80,10 +71,9 @@ class SavedStateViewModelFactory : ViewModelProvider.OnRequeryFactory, ViewModel
      * if there is no previously saved state or previously saved state misses a value by such key.
      */
     constructor(owner: SavedStateRegistryOwner, defaultArgs: Bundle?) {
-        savedStateRegistry = owner.platformSavedStateRegistry
-        lifecycle = owner.platformLifecycle
+        savedStateRegistry = owner.savedStateRegistry
+        lifecycle = owner.lifecycle
         this.defaultArgs = defaultArgs
-        factory = ViewModelProvider.NonAndroidViewModelFactory()
     }
     /**
      * {@inheritDoc}

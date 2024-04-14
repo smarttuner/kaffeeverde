@@ -26,9 +26,12 @@
 package net.smarttuner.kaffeeverde.lifecycle
 
 import androidx.annotation.RestrictTo
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.CreationExtras
 import net.smarttuner.kaffeeverde.core.Bundle
 import net.smarttuner.kaffeeverde.lifecycle.LegacySavedStateHandleController.attachHandleIfNeeded
-import net.smarttuner.kaffeeverde.lifecycle.viewmodel.CreationExtras
 import kotlin.reflect.KClass
 
 
@@ -39,21 +42,11 @@ import kotlin.reflect.KClass
  * `androidx.lifecycle.ViewModel`s.
  */
 public abstract class AbstractSavedStateViewModelFactory :
-    ViewModelProvider.OnRequeryFactory,
     ViewModelProvider.Factory {
     private var savedStateRegistry: SavedStateRegistry? = null
     private var lifecycle: Lifecycle? = null
     private var defaultArgs: Bundle? = null
-    /**
-     * Constructs this factory.
-     *
-     * When a factory is constructed this way, a component for which [SavedStateHandle] is
-     * scoped must have called
-     * [SavedStateHandleSupport.enableSavedStateHandles].
-     * See [CreationExtras.createSavedStateHandle] docs for more
-     * details.
-     */
-    constructor() {}
+
     /**
      * Constructs this factory.
      *
@@ -64,11 +57,11 @@ public abstract class AbstractSavedStateViewModelFactory :
      * previously saved state or previously saved state misses a value by such key
      */
     constructor(
-        owner: SavedStateRegistryOwner,
-        defaultArgs: Bundle?
+        owner: SavedStateRegistryOwner? = null,
+        defaultArgs: Bundle? = null
     ) {
-        savedStateRegistry = owner.platformSavedStateRegistry
-        lifecycle = owner.platformLifecycle
+        savedStateRegistry = owner?.savedStateRegistry
+        lifecycle = owner?.lifecycle
         this.defaultArgs = defaultArgs
     }
     /**
@@ -85,7 +78,7 @@ public abstract class AbstractSavedStateViewModelFactory :
         modelClass: KClass<T>,
         extras: CreationExtras
     ): T {
-        val key = extras[ViewModelProvider.NewInstanceFactory.VIEW_MODEL_KEY]
+        val key = extras[ViewModelProvider.VIEW_MODEL_KEY]
             ?: throw IllegalStateException(
                 "VIEW_MODEL_KEY must always be provided by ViewModelProvider"
             )
@@ -96,11 +89,12 @@ public abstract class AbstractSavedStateViewModelFactory :
             create(key, modelClass, extras.createSavedStateHandle())
         }
     }
+    @OptIn(ExperimentalStdlibApi::class)
     private fun <T : ViewModel> create(key: String, modelClass: KClass<T>): T {
         val controller = LegacySavedStateHandleController
             .create(savedStateRegistry!!, lifecycle!!, key, defaultArgs)
         val viewModel = create(key, modelClass, controller.handle)
-        viewModel.setTagIfAbsent(TAG_SAVED_STATE_HANDLE_CONTROLLER, controller)
+        viewModel.addCloseable(TAG_SAVED_STATE_HANDLE_CONTROLLER, controller)
         return viewModel
     }
     /**
@@ -114,7 +108,7 @@ public abstract class AbstractSavedStateViewModelFactory :
      * @throws UnsupportedOperationException if AbstractSavedStateViewModelFactory constructed
      * with empty constructor, therefore no [SavedStateRegistryOwner] available for lifecycle
      */
-    public override fun <T : ViewModel> create(modelClass: KClass<T>): T {
+    public fun <T : ViewModel> create(modelClass: KClass<T>): T {
         // ViewModelProvider calls correct create that support same modelClass with different keys
         // If a developer manually calls this method, there is no "key" in picture, so factory
         // simply uses classname internally as as key.
@@ -143,15 +137,16 @@ public abstract class AbstractSavedStateViewModelFactory :
         modelClass: KClass<T>,
         handle: SavedStateHandle
     ): T
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    /*@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     override fun onRequery(viewModel: ViewModel) {
         // is need only for legacy path
         if (savedStateRegistry != null) {
             attachHandleIfNeeded(viewModel, savedStateRegistry!!, lifecycle!!)
         }
-    }
+    }*/
     internal companion object {
         internal const val TAG_SAVED_STATE_HANDLE_CONTROLLER =
             "androidx.lifecycle.savedstate.vm.tag"
     }
 }
+

@@ -22,12 +22,20 @@
 package net.smarttuner.kaffeeverde.navigation
 
 import androidx.annotation.RestrictTo
+import androidx.lifecycle.HasDefaultViewModelProviderFactory
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.lifecycle.viewmodel.MutableCreationExtras
 import net.smarttuner.kaffeeverde.core.Bundle
 import net.smarttuner.kaffeeverde.core.UUID
 import net.smarttuner.kaffeeverde.core.keySet
 import net.smarttuner.kaffeeverde.lifecycle.*
-import net.smarttuner.kaffeeverde.lifecycle.viewmodel.CreationExtras
-import net.smarttuner.kaffeeverde.lifecycle.viewmodel.MutableCreationExtras
 import kotlin.reflect.KClass
 
 /**
@@ -83,7 +91,7 @@ class NavBackStackEntry private constructor(
             hostLifecycleState, viewModelStoreProvider, id, savedState
         )
     }
-    var _platformLifecycle = LifecycleRegistry(this)
+    var _lifecycle = LifecycleRegistry(this)
     private val savedStateRegistryController = SavedStateRegistryController.create(this)
     private var savedStateRegistryAttached = false
     private val defaultFactory by lazy {
@@ -112,11 +120,11 @@ class NavBackStackEntry private constructor(
                 "the NavController's back stack (i.e., the Lifecycle of the NavBackStackEntry " +
                 "reaches the CREATED state)."
         }
-        check(platformLifecycle.currentState != Lifecycle.State.DESTROYED) {
+        check(lifecycle.currentState != Lifecycle.State.DESTROYED) {
             "You cannot access the NavBackStackEntry's SavedStateHandle after the " +
                 "NavBackStackEntry is destroyed."
         }
-        ViewModelProvider(
+        ViewModelProvider.create(
             this, NavResultSavedStateFactory(this)
         ).get(SavedStateViewModel::class).handle
     }
@@ -127,8 +135,8 @@ class NavBackStackEntry private constructor(
      * [androidx.navigation.NavHostController.setLifecycleOwner], the
      * Lifecycle will be capped at [Lifecycle.State.CREATED].
      */
-    override val platformLifecycle: Lifecycle
-        get() = _platformLifecycle
+    override val lifecycle: Lifecycle
+        get() = _lifecycle
     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     @set:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public var maxLifecycle: Lifecycle.State = Lifecycle.State.INITIALIZED
@@ -157,12 +165,12 @@ class NavBackStackEntry private constructor(
             savedStateRegistryController.performRestore(savedState)
         }
         if (hostLifecycleState.ordinal < maxLifecycle.ordinal) {
-            _platformLifecycle.currentState = hostLifecycleState
+            _lifecycle.currentState = hostLifecycleState
         } else {
-            _platformLifecycle.currentState = maxLifecycle
+            _lifecycle.currentState = maxLifecycle
         }
     }
-    public override val platformViewModelStore: ViewModelStore
+    public override val viewModelStore: ViewModelStore
         /**
          * {@inheritDoc}
          *
@@ -176,7 +184,7 @@ class NavBackStackEntry private constructor(
                     "the NavController's back stack (i.e., the Lifecycle of the " +
                     "NavBackStackEntry reaches the CREATED state)."
             }
-            check(platformLifecycle.currentState != Lifecycle.State.DESTROYED) {
+            check(lifecycle.currentState != Lifecycle.State.DESTROYED) {
                 "You cannot access the NavBackStackEntry's ViewModels after the " +
                     "NavBackStackEntry is destroyed."
             }
@@ -197,7 +205,7 @@ class NavBackStackEntry private constructor(
         }
         return extras
     }
-    override val platformSavedStateRegistry: SavedStateRegistry
+    override val savedStateRegistry: SavedStateRegistry
         get() = savedStateRegistryController.savedStateRegistry
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public fun saveState(outBundle: Bundle) {
@@ -208,8 +216,8 @@ class NavBackStackEntry private constructor(
         val arguments = arguments
         if (other == null || other !is NavBackStackEntry) return false
         return id == other.id && destination == other.destination &&
-            platformLifecycle == other.platformLifecycle &&
-            platformSavedStateRegistry == other.platformSavedStateRegistry &&
+            lifecycle == other.lifecycle &&
+            savedStateRegistry == other.savedStateRegistry &&
             (
                 arguments == other.arguments ||
                         arguments?.keySet
@@ -223,8 +231,8 @@ class NavBackStackEntry private constructor(
         immutableArgs?.keySet?.forEach {
             result = 31 * result + immutableArgs.get(it).hashCode()
         }
-        result = 31 * result + platformLifecycle.hashCode()
-        result = 31 * result + platformSavedStateRegistry.hashCode()
+        result = 31 * result + lifecycle.hashCode()
+        result = 31 * result + savedStateRegistry.hashCode()
         return result
     }
     override fun toString(): String {

@@ -23,6 +23,12 @@ package net.smarttuner.kaffeeverde.navigation
 
 import androidx.annotation.CallSuper
 import androidx.annotation.RestrictTo
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
@@ -31,11 +37,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import net.smarttuner.kaffeeverde.activity.OnBackPressedDispatcher
 import net.smarttuner.kaffeeverde.core.AtomicInteger
 import net.smarttuner.kaffeeverde.core.Bundle
 import net.smarttuner.kaffeeverde.core.OnBackPressedCallback
-import net.smarttuner.kaffeeverde.core.Serializable
 import net.smarttuner.kaffeeverde.core.Uri
 import net.smarttuner.kaffeeverde.core.annotation.IdRes
 import net.smarttuner.kaffeeverde.core.annotation.MainThread
@@ -47,7 +51,6 @@ import net.smarttuner.kaffeeverde.core.getBoolean
 import net.smarttuner.kaffeeverde.core.getBundle
 import net.smarttuner.kaffeeverde.core.getIntArray
 import net.smarttuner.kaffeeverde.core.getStringArrayList
-import net.smarttuner.kaffeeverde.core.net.URISyntaxException
 import net.smarttuner.kaffeeverde.core.putAnyArray
 import net.smarttuner.kaffeeverde.core.putBoolean
 import net.smarttuner.kaffeeverde.core.putBundle
@@ -55,8 +58,6 @@ import net.smarttuner.kaffeeverde.core.putIntArray
 import net.smarttuner.kaffeeverde.core.putObject
 import net.smarttuner.kaffeeverde.core.putStringArrayList
 import net.smarttuner.kaffeeverde.core.toUri
-import net.smarttuner.kaffeeverde.lifecycle.ViewModelStore
-import net.smarttuner.kaffeeverde.lifecycle.ViewModelStoreOwner
 import net.smarttuner.kaffeeverde.lifecycle.*
 import net.smarttuner.kaffeeverde.navigation.NavDestination.Companion.createRoute
 import net.smarttuner.kaffeeverde.navigation.NavDestination.Companion.hierarchy
@@ -328,7 +329,7 @@ public open class NavController{
                 unlinkChildFromParent(entry)
                 // If the entry is no longer part of the backStack, we need to manually move
                 // it to DESTROYED, and clear its view model
-                if (entry.platformLifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
+                if (entry.lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
                     entry.maxLifecycle = Lifecycle.State.DESTROYED
                 }
                 if (backQueue.none { it.id == entry.id } && !savedState) {
@@ -696,7 +697,7 @@ public open class NavController{
         // need to check if it still has children.
         val transitioning = state?.transitionsInProgress?.value?.contains(entry) == true ||
             parentToChildCount.containsKey(entry)
-        if (entry.platformLifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
+        if (entry.lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
             if (saveState) {
                 // Move the state through STOPPED
                 entry.maxLifecycle = Lifecycle.State.CREATED
@@ -1928,9 +1929,9 @@ public open class NavController{
         if (owner == lifecycleOwner) {
             return
         }
-        lifecycleOwner?.platformLifecycle?.removeObserver(lifecycleObserver)
+        lifecycleOwner?.lifecycle?.removeObserver(lifecycleObserver)
         lifecycleOwner = owner
-        owner.platformLifecycle.addObserver(lifecycleObserver)
+        owner.lifecycle.addObserver(lifecycleObserver)
     }
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public open fun setOnBackPressedDispatcher(dispatcher: OnBackPressedDispatcher) {
@@ -1947,7 +1948,7 @@ public open class NavController{
         dispatcher.addCallback(lifecycleOwner, onBackPressedCallback)
         // Make sure that listener for updating the NavBackStackEntry lifecycles comes after
         // the dispatcher
-        lifecycleOwner.platformLifecycle.apply {
+        lifecycleOwner.lifecycle.apply {
             removeObserver(lifecycleObserver)
             addObserver(lifecycleObserver)
         }

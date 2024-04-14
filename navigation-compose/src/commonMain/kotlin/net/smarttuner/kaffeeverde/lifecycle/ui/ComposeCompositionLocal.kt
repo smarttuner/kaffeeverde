@@ -33,8 +33,6 @@
 package net.smarttuner.kaffeeverde.lifecycle.ui
 
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.staticCompositionLocalOf
-import net.smarttuner.kaffeeverde.lifecycle.LifecycleOwner
-import net.smarttuner.kaffeeverde.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.ViewModelStoreOwner
 
 val LocalViewModelStoreOwner = compositionLocalOf<ViewModelStoreOwner?> { null }

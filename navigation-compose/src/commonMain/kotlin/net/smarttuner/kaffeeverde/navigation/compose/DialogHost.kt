@@ -25,9 +25,9 @@ import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.window.Dialog
-import net.smarttuner.kaffeeverde.lifecycle.Lifecycle
-import net.smarttuner.kaffeeverde.lifecycle.LifecycleEventObserver
-import net.smarttuner.kaffeeverde.lifecycle.LifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import net.smarttuner.kaffeeverde.navigation.NavBackStackEntry
 
 /**
@@ -66,7 +66,7 @@ internal fun MutableList<NavBackStackEntry>.PopulateVisibleList(
 ) {
     val isInspecting = LocalInspectionMode.current
     transitionsInProgress.forEach { entry ->
-        DisposableEffect(entry.platformLifecycle) {
+        DisposableEffect(entry.lifecycle) {
             val observer = object : LifecycleEventObserver {
                 override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event){
                     // show dialog in preview
@@ -87,9 +87,9 @@ internal fun MutableList<NavBackStackEntry>.PopulateVisibleList(
                     }
                 }
             }
-            entry.platformLifecycle.addObserver(observer)
+            entry.lifecycle.addObserver(observer)
             onDispose {
-                entry.platformLifecycle.removeObserver(observer)
+                entry.lifecycle.removeObserver(observer)
             }
         }
     }
@@ -107,7 +107,7 @@ internal fun rememberVisibleList(
                     if (isInspecting) {
                         true
                     } else {
-                        entry.platformLifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
+                        entry.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
                     }
                 }
             )

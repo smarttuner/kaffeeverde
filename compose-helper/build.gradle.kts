@@ -9,36 +9,16 @@ plugins {
 version = Versions.KAFFEEVERDE_COMPOSE_HELPER
 
 kotlin {
-    androidTarget()
-    jvm("desktop") {
-        compilations.all {
-            kotlinOptions.jvmTarget = "11"
-        }
-    }
-    ios()
-    iosSimulatorArm64()
-
     sourceSets {
-        val commonMain by getting {
+        commonMain {
             dependencies {
-                api(project(":lifecycle"))
-                api(project(":lifecycle-viewmodel-savedstate"))
+                api(libs.lifecycle.common)
+                implementation(libs.lifecycle.viewmodel)
+                implementation(project(":lifecycle-viewmodel-savedstate"))
                 api(compose.ui)
                 api(compose.foundation)
                 api(compose.runtime)
             }
-        }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-            }
-        }
-        val androidMain by getting
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosMain by getting
-        val iosSimulatorArm64Main by getting {
-            dependsOn(iosMain)
         }
     }
 }

@@ -211,7 +211,7 @@ public fun NavHost(
         navController.setLifecycleOwner(lifecycleOwner)
         onDispose { }
     }
-    navController.setViewModelStore(viewModelStoreOwner.platformViewModelStore)
+    navController.setViewModelStore(viewModelStoreOwner.viewModelStore)
     // Then set the graph
     navController.graph = graph
     val saveableStateHolder = rememberSaveableStateHolder()

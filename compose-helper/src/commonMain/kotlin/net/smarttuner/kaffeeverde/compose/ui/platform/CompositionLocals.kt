@@ -1,7 +1,7 @@
 package net.smarttuner.kaffeeverde.compose.ui.platform
 
 import androidx.compose.runtime.staticCompositionLocalOf
-import net.smarttuner.kaffeeverde.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleOwner
 import net.smarttuner.kaffeeverde.lifecycle.SavedStateRegistryOwner
 
 /**
@@ -21,3 +21,5 @@ private fun noLocalProvidedFor(name: String): Nothing {
 val LocalSavedStateRegistryOwner = staticCompositionLocalOf<SavedStateRegistryOwner> {
     noLocalProvidedFor("LocalSavedStateRegistryOwner")
 }
+
+public inline fun error(message: Any): Nothing = throw IllegalStateException(message.toString())

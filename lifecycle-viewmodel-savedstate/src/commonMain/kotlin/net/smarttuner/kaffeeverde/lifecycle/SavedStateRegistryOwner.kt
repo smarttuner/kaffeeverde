@@ -48,9 +48,11 @@
  */
 package net.smarttuner.kaffeeverde.lifecycle
 
+import androidx.lifecycle.LifecycleOwner
+
 interface SavedStateRegistryOwner : LifecycleOwner {
     /**
      * The [SavedStateRegistry] owned by this SavedStateRegistryOwner
      */
-    val platformSavedStateRegistry: SavedStateRegistry
+    val savedStateRegistry: SavedStateRegistry
 }

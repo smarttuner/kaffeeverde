@@ -19,11 +19,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.saveable.SaveableStateHolder
+import androidx.lifecycle.ViewModel
 import com.benasher44.uuid.Uuid
-import net.smarttuner.kaffeeverde.core.UUID
-import net.smarttuner.kaffeeverde.lifecycle.ViewModel
 import net.smarttuner.kaffeeverde.compose.ui.platform.LocalLifecycleOwner
 import net.smarttuner.kaffeeverde.compose.ui.platform.LocalSavedStateRegistryOwner
+import net.smarttuner.kaffeeverde.core.UUID
 import net.smarttuner.kaffeeverde.lifecycle.ui.LocalViewModelStoreOwner
 import net.smarttuner.kaffeeverde.navigation.NavBackStackEntry
 

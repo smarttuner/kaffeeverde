@@ -16,7 +16,7 @@ class ConfigMavenPlugin : Plugin<Project> {
             apply("maven-publish")
             apply("org.jetbrains.kotlin.multiplatform")
         }
-        configureToGitHubPackages()
+        //configureToGitHubPackages()
     }
 }
 
@@ -25,7 +25,7 @@ private fun Project.configureToGitHubPackages() {
         val publicationsFromMainHost =
             listOf(
                 androidTarget(),
-                jvm("desktop"),
+                jvm(),
                 iosX64(),
                 iosArm64(),
                 iosSimulatorArm64()

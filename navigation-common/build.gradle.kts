@@ -12,19 +12,9 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(project(":lifecycle-viewmodel-savedstate"))
+                implementation(libs.lifecycle.runtime)
             }
         }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-            }
-        }
-        val androidMain by getting
-        val androidUnitTest by getting
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by getting
     }
 }
 

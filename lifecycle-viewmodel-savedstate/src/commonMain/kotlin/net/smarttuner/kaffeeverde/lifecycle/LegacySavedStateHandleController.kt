@@ -15,6 +15,11 @@
  */
 package net.smarttuner.kaffeeverde.lifecycle
 
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelStoreOwner
 import net.smarttuner.kaffeeverde.core.Bundle
 import net.smarttuner.kaffeeverde.lifecycle.SavedStateHandle.Companion.createHandle
 import kotlin.jvm.JvmStatic
@@ -41,7 +46,7 @@ internal object LegacySavedStateHandleController {
         registry: SavedStateRegistry,
         lifecycle: Lifecycle
     ) {
-        val controller = viewModel.getTag<SavedStateHandleController>(
+        val controller = viewModel.getCloseable<SavedStateHandleController>(
             TAG_SAVED_STATE_HANDLE_CONTROLLER
         )
         if (controller != null && !controller.isAttached) {
@@ -74,11 +79,11 @@ internal object LegacySavedStateHandleController {
                 ("Internal error: OnRecreation should be registered only on components " +
                         "that implement ViewModelStoreOwner")
             }
-            val viewModelStore = (owner as ViewModelStoreOwner).platformViewModelStore
-            val savedStateRegistry = owner.platformSavedStateRegistry
+            val viewModelStore = (owner as ViewModelStoreOwner).viewModelStore
+            val savedStateRegistry = owner.savedStateRegistry
             for (key in viewModelStore.keys()) {
                 val viewModel = viewModelStore[key]
-                attachHandleIfNeeded(viewModel!!, savedStateRegistry, owner.platformLifecycle)
+                attachHandleIfNeeded(viewModel!!, savedStateRegistry, owner.lifecycle)
             }
             if (viewModelStore.keys().isNotEmpty()) {
                 savedStateRegistry.runOnNextRecreation(OnRecreation::class)

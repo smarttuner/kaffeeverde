@@ -15,10 +15,15 @@
  */
 package net.smarttuner.kaffeeverde.lifecycle
 
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+
+@OptIn(ExperimentalStdlibApi::class)
 internal class SavedStateHandleController(
     private val key: String,
     val handle: SavedStateHandle
-) : LifecycleEventObserver {
+) : LifecycleEventObserver, AutoCloseable {
     var isAttached = false
         private set
     fun attachToLifecycle(registry: SavedStateRegistry, lifecycle: Lifecycle) {
@@ -30,7 +35,12 @@ internal class SavedStateHandleController(
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         if (event === Lifecycle.Event.ON_DESTROY) {
             isAttached = false
-            source.platformLifecycle.removeObserver(this)
+            source.lifecycle.removeObserver(this)
         }
+    }
+
+    override fun close() {
+        // This class has nothing to actually close, but all objects added via
+        // ViewModel's addCloseable(key, Closeable) must be Closeable.
     }
 }

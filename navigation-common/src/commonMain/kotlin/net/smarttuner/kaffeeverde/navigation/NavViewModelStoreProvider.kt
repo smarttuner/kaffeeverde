@@ -21,7 +21,7 @@
  */
 package net.smarttuner.kaffeeverde.navigation
 
-import net.smarttuner.kaffeeverde.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStore
 
 /**
  * Interface that allows you to retrieve a [ViewModelStore] associated with a

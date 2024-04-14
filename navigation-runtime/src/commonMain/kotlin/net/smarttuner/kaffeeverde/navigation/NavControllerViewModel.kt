@@ -21,6 +21,11 @@
  */
 package net.smarttuner.kaffeeverde.navigation
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.get
+import androidx.lifecycle.viewmodel.CreationExtras
 import net.smarttuner.kaffeeverde.core.toHexString
 import net.smarttuner.kaffeeverde.lifecycle.*
 import kotlin.collections.Iterator
@@ -67,21 +72,15 @@ internal class NavControllerViewModel : ViewModel(), NavViewModelStoreProvider {
 
         private val FACTORY: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: KClass<T>): T {
+            override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {
                 return NavControllerViewModel() as T
             }
         }
 
         @Deprecated("Use instance instead")
         fun getInstance(viewModelStore: ViewModelStore): NavControllerViewModel {
-            val viewModelProvider = ViewModelProvider(viewModelStore, FACTORY)
-            var vm = viewModelProvider.get<NavControllerViewModel>()
-            if(vm==null){
-                val newVM = NavControllerViewModel()
-                vm = newVM
-                viewModelProvider.set(vm)
-            }
-            return vm
+            val viewModelProvider = ViewModelProvider.create(viewModelStore, FACTORY)
+            return viewModelProvider.get<NavControllerViewModel>()
         }
     }
 }

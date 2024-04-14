@@ -3,6 +3,7 @@
 
 package net.smarttuner.kv.gradle
 
+import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
@@ -14,6 +15,7 @@ import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -24,52 +26,16 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
         }
 
         kotlin {
-            targetHierarchy.default()
-
-            jvm("desktop"){
+            jvm{
                 compilations.all {
-                    kotlinOptions.jvmTarget = "11"
+                    kotlinOptions.jvmTarget = "17"
                 }
             }
             androidTarget()
 
-            listOf(
-                iosX64(),
-                iosArm64(),
-                iosSimulatorArm64(),
-            ).forEach { target ->
-                target.binaries.framework {
-                    baseName = path.substring(1).replace(':', '-')
-                }
-            }
-            targets.withType<KotlinNativeTarget>().configureEach {
-                binaries.all {
-                    // Add linker flag for SQLite. See:
-                    // https://github.com/touchlab/SQLiter/issues/77
-                    linkerOpts("-lsqlite3")
-                }
-
-                compilations.configureEach {
-                    compilerOptions.configure {
-                        // Try out preview custom allocator in K/N 1.9
-                        // https://kotlinlang.org/docs/whatsnew19.html#preview-of-custom-memory-allocator
-                        freeCompilerArgs.add("-Xallocator=custom")
-
-                        // https://kotlinlang.org/docs/whatsnew19.html#compiler-option-for-c-interop-implicit-integer-conversions
-                        freeCompilerArgs.add("-XXLanguage:+ImplicitSignedToUnsignedIntegerConversion")
-
-                        // Enable debug symbols:
-                        // https://kotlinlang.org/docs/native-ios-symbolication.html
-                        freeCompilerArgs.add("-Xadd-light-debug=enable")
-
-                        // Various opt-ins
-                        freeCompilerArgs.addAll(
-                            "-opt-in=kotlinx.cinterop.ExperimentalForeignApi",
-                            "-opt-in=kotlinx.cinterop.BetaInteropApi",
-                        )
-                    }
-                }
-            }
+            iosX64()
+            iosArm64()
+            iosSimulatorArm64()
             configureKotlin()
         }
     }

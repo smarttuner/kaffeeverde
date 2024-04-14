@@ -21,9 +21,9 @@
  */
 package net.smarttuner.kaffeeverde.navigation
 
-import net.smarttuner.kaffeeverde.activity.OnBackPressedDispatcher
-import net.smarttuner.kaffeeverde.lifecycle.LifecycleOwner
-import net.smarttuner.kaffeeverde.lifecycle.ViewModelStore
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModelStore
+
 /**
  * Subclass of [NavController] that offers additional APIs for use by a
  * [NavHost] to connect the NavController to external dependencies.

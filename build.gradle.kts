@@ -6,10 +6,10 @@ plugins {
 
 buildscript {
     repositories {
+        google()
         mavenLocal()
         mavenCentral()
         gradlePluginPortal()
-        google()
     }
 
     dependencies {
@@ -21,10 +21,10 @@ buildscript {
 
 allprojects {
     repositories {
+        google()
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev/")
         mavenCentral()
         mavenLocal()
-        google()
     }
     afterEvaluate {
         project.extensions.findByType<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension>()?.let { ext ->

@@ -3,31 +3,26 @@ plugins {
     id("net.smarttuner.gradle.kv.commonConfig")
     id("net.smarttuner.gradle.kv.kotlin.multiplatform")
     id(composePlugin) version Versions.COMPOSE_MULTIPLATFORM_PLUGIN
-    id("net.smarttuner.gradle.kv.configmaven")
+    id(mavenPublish)
 }
 
 version = Versions.KAFFEEVERDE_NAVIGATION_COMPOSE
 
 kotlin {
     sourceSets {
-        val commonMain by getting {
+        commonMain {
             dependencies {
-                api(project(":compose-helper"))
                 api(project(":navigation-runtime"))
+                api(project(":compose-helper"))
                 api(compose.ui)
                 api(compose.foundation)
                 api(compose.runtime)
+                implementation(libs.lifecycle.runtime)
+                api(libs.kotlinStdlib)
+                api(libs.kotlinStdlibCommon)
+
             }
         }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-            }
-        }
-        val androidMain by getting
-        val androidUnitTest by getting
-        val iosMain by getting
-        val iosTest by getting
     }
 }
 

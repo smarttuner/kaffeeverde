@@ -21,9 +21,9 @@
  */
 package net.smarttuner.kaffeeverde.navigation
 
+import androidx.lifecycle.Lifecycle
 import net.smarttuner.kaffeeverde.core.Bundle
 import net.smarttuner.kaffeeverde.core.Serializable
-import net.smarttuner.kaffeeverde.lifecycle.Lifecycle
 
 
 internal class NavBackStackEntryState(entry: NavBackStackEntry) : Serializable {

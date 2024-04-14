@@ -11,33 +11,22 @@ description = "KaffeeVerde Application Support"
 
 kotlin {
     sourceSets {
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 api(project(":navigation-compose"))
                 api(compose.ui)
                 api(compose.foundation)
                 api(compose.runtime)
+                implementation(project(":compose-helper"))
             }
         }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-            }
-        }
-        val androidMain by getting {
-            dependsOn(commonMain)
+        androidMain {
             dependencies {
                 implementation(Deps.AndroidXPlatform.AppCompat)
                 implementation(Deps.AndroidXPlatform.ActivityKtx)
-                implementation("androidx.lifecycle:lifecycle-runtime:2.6.1")
-                implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
-
+                implementation(libs.lifecycle.runtime)
+                implementation(libs.lifecycle.runtime.compose)
             }
-        }
-        val androidUnitTest by getting
-        val iosMain by getting
-        val iosSimulatorArm64Main by getting {
-            dependsOn(iosMain)
         }
     }
 }
