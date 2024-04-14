@@ -1,8 +1,8 @@
 plugins {
-    id("net.smarttuner.gradle.kv.configmaven")
     id("net.smarttuner.gradle.kv.android.library")
     id("net.smarttuner.gradle.kv.commonConfig")
     id("net.smarttuner.gradle.kv.kotlin.multiplatform")
+    id("net.smarttuner.gradle.kv.configmaven")
 }
 
 version = Versions.KAFFEEVERDE_CORE

@@ -1,5 +1,8 @@
 package net.smarttuner.kaffeeverde.core.ref
 
+import kotlin.experimental.ExperimentalNativeApi
+
+@OptIn(ExperimentalNativeApi::class)
 actual class WeakReference<T : Any> {
 
     val _intValue: kotlin.native.ref.WeakReference<T>
