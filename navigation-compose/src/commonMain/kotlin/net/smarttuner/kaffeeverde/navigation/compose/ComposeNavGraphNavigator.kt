@@ -18,6 +18,7 @@ package net.smarttuner.kaffeeverde.navigation.compose
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.SizeTransform
 import net.smarttuner.kaffeeverde.navigation.NavBackStackEntry
 import net.smarttuner.kaffeeverde.navigation.NavGraph
 import net.smarttuner.kaffeeverde.navigation.NavGraphNavigator
@@ -47,5 +48,7 @@ internal class ComposeNavGraphNavigator(
         AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? = null
         internal var popExitTransition: (@JvmSuppressWildcards
         AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? = null
+        internal var sizeTransform: (@JvmSuppressWildcards
+        AnimatedContentTransitionScope<NavBackStackEntry>.() -> SizeTransform?)? = null
     }
 }

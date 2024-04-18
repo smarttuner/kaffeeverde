@@ -24,8 +24,11 @@ import com.benasher44.uuid.Uuid
 import net.smarttuner.kaffeeverde.compose.ui.platform.LocalLifecycleOwner
 import net.smarttuner.kaffeeverde.compose.ui.platform.LocalSavedStateRegistryOwner
 import net.smarttuner.kaffeeverde.core.UUID
+import net.smarttuner.kaffeeverde.core.ref.WeakReference
+import net.smarttuner.kaffeeverde.lifecycle.SavedStateHandle
 import net.smarttuner.kaffeeverde.lifecycle.ui.LocalViewModelStoreOwner
 import net.smarttuner.kaffeeverde.navigation.NavBackStackEntry
+import net.smarttuner.kaffeeverde.viewmodel.viewModel
 
 /**
  * Provides [this] [NavBackStackEntry] as [LocalViewModelStoreOwner], [LocalLifecycleOwner] and
@@ -52,26 +55,29 @@ public fun NavBackStackEntry.LocalOwnersProvider(
 }
 @Composable
 private fun SaveableStateHolder.SaveableStateProvider(content: @Composable () -> Unit) {
-    val viewModel = BackStackEntryIdViewModel()
-    viewModel.saveableStateHolder = this
-    SaveableStateProvider(viewModel.id, content)
-    DisposableEffect(viewModel) {
-        onDispose {
-            viewModel.saveableStateHolder = null
-        }
+    val viewModel = viewModel<BackStackEntryIdViewModel>{
+        BackStackEntryIdViewModel(SavedStateHandle())
     }
+    // Stash a reference to the SaveableStateHolder in the ViewModel so that
+    // it is available when the ViewModel is cleared, marking the permanent removal of this
+    // NavBackStackEntry from the back stack. Which, because of animations,
+    // only happens after this leaves composition. Which means we can't rely on
+    // DisposableEffect to clean up this reference (as it'll be cleaned up too early)
+    viewModel.saveableStateHolderRef = WeakReference(this)
+    SaveableStateProvider(viewModel.id, content)
 }
-internal class BackStackEntryIdViewModel() : ViewModel() {
+internal class BackStackEntryIdViewModel(handle: SavedStateHandle) : ViewModel() {
     private val IdKey = "SaveableStateHolder_BackStackEntryKey"
     // we create our own id for each back stack entry to support multiple entries of the same
     // destination. this id will be restored by SavedStateHandle
-    val id: Uuid = UUID.randomUUID()
-    var saveableStateHolder: SaveableStateHolder? = null
+    val id: Uuid = handle.get<Uuid>(IdKey) ?: UUID.randomUUID().also { handle.set(IdKey, it) }
+    lateinit var saveableStateHolderRef: WeakReference<SaveableStateHolder>
     // onCleared will be called on the entries removed from the back stack. here we notify
-    // RestorableStateHolder that we shouldn't save the state for this id, so when we open this
-    // destination again the state will not be restored.
+    // SaveableStateProvider that we should remove any state is had associated with this
+    // destination as it is no longer needed.
     override fun onCleared() {
         super.onCleared()
-        saveableStateHolder?.removeState(id)
+        saveableStateHolderRef.get()?.removeState(id)
+        saveableStateHolderRef.clear()
     }
 }

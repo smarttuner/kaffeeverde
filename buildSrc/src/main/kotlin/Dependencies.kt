@@ -2,8 +2,7 @@ const val mavenPublish = "maven-publish"
 const val composePlugin = "org.jetbrains.compose"
 
 object Versions {
-    const val KAFFEEVERDE_CORE = "2.7.0-dev82"
-    const val KAFFEEVERDE_LIFECYCLE_VIEWMODEL = KAFFEEVERDE_CORE
+    const val KAFFEEVERDE_CORE = "2.8.0-dev101"
     const val KAFFEEVERDE_LIFECYCLE_VIEWMODEL_SAVEDSTATE = KAFFEEVERDE_CORE
     const val KAFFEEVERDE_COMPOSE_HELPER = KAFFEEVERDE_CORE
     const val KAFFEEVERDE_NAVIGATION_COMMON = KAFFEEVERDE_CORE
@@ -18,12 +17,12 @@ object Versions {
 
     const val KTOR = "2.0.1"
     const val UUID = "0.4.0"
-    const val DITCHOOM_BUFFER = "1.0.86"
+    const val DITCHOOM_BUFFER = "1.3.38"
 
     const val ANDROID_X_ACTIVITY= "1.7.0"
-    const val COMPOSE_MULTIPLATFORM_PLUGIN = "1.6.0"
+    const val COMPOSE_MULTIPLATFORM_PLUGIN = "1.6.10-dev1584"
 
-    const val COMPOSE = "1.6.0"
+    const val COMPOSE = "1.6.10-dev1584"
 
     const val kotlin_serialization_gradle_plugin = KOTLIN
 }
@@ -43,6 +42,7 @@ object Deps {
     }
     object DitchoomBuffer {
         const val DitchoomBuffer = "com.ditchoom:buffer:${Versions.DITCHOOM_BUFFER}"
+        const val DitchoomBufferAndroid = "com.ditchoom:buffer-jvm:${Versions.DITCHOOM_BUFFER}"
     }
     object Napier{
         const val Napier = "io.github.aakira:napier:${Versions.NAPIER}"

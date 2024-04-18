@@ -113,9 +113,11 @@ public open class NavDestination(
          * Returns true if all args from [DeepLinkMatch.matchingArgs] can be found within
          * the [arguments].
          *
-         * This returns true in both edge cases:
+         * This returns true in these edge cases:
          * 1. If the [arguments] contain more args than [DeepLinkMatch.matchingArgs].
          * 2. If [DeepLinkMatch.matchingArgs] is empty
+         * 3. Argument has null value in both [DeepLinkMatch.matchingArgs] and [arguments]
+         * i.e. arguments/params with nullable values
          *
          * @param [arguments] The arguments to match with the matchingArgs stored in this
          * DeepLinkMatch.
@@ -364,7 +366,7 @@ public open class NavDestination(
             val mimeTypeMatchLevel =
                 if (mimeType != null) deepLink.getMimeTypeMatchRating(mimeType) else -1
             if (matchingArguments != null || ((matchingAction || mimeTypeMatchLevel > -1) &&
-                    hasRequiredArguments(deepLink, uri, arguments))
+                        (uri != null && hasRequiredArguments(deepLink, uri, arguments)))
             ) {
                 val newMatch = DeepLinkMatch(
                     this, matchingArguments,
@@ -533,7 +535,7 @@ public open class NavDestination(
     @Suppress("NullableCollection") // Needed for nullable bundle
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public fun addInDefaultArgs(args: Bundle?): Bundle? {
-        if (args == null && _arguments.isNullOrEmpty()) {
+        if (args == null && _arguments.isEmpty()) {
             return null
         }
         val defaultArgs = Bundle()
@@ -542,10 +544,14 @@ public open class NavDestination(
         }
         if (args != null) {
             defaultArgs.putAll(args)
+            // Don't verify unknown default values - these default values are only available
+            // during deserialization for safe args.
             for ((key, value) in _arguments) {
-                require(value.verify(key, defaultArgs)) {
-                    "Wrong argument type for '$key' in argument bundle. ${value.type.name} " +
-                        "expected."
+                if (!value.isDefaultValueUnknown) {
+                    require(value.verify(key, defaultArgs)) {
+                        "Wrong argument type for '$key' in argument bundle. ${value.type.name} " +
+                            "expected."
+                    }
                 }
             }
         }

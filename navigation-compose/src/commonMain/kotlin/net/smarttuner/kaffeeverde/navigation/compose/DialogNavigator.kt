@@ -19,6 +19,7 @@ package net.smarttuner.kaffeeverde.navigation.compose
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import net.smarttuner.kaffeeverde.navigation.FloatingWindow
 import net.smarttuner.kaffeeverde.navigation.NavBackStackEntry
 import net.smarttuner.kaffeeverde.navigation.NavDestination
 import net.smarttuner.kaffeeverde.navigation.NavOptions
@@ -36,10 +37,14 @@ public class DialogNavigator : Navigator<DialogNavigator.Destination>() {
      */
     internal val backStack get() = state.backStack
     /**
+     * Get the transitioning dialogs from the [state].
+     */
+    internal val transitionInProgress get() = state.transitionsInProgress
+    /**
      * Dismiss the dialog destination associated with the given [backStackEntry].
      */
     internal fun dismiss(backStackEntry: NavBackStackEntry) {
-        state.popWithTransition(backStackEntry, false)
+        popBackStack(backStackEntry, false)
     }
     override fun navigate(
         entries: List<NavBackStackEntry>,
@@ -55,6 +60,13 @@ public class DialogNavigator : Navigator<DialogNavigator.Destination>() {
     }
     override fun popBackStack(popUpTo: NavBackStackEntry, savedState: Boolean) {
         state.popWithTransition(popUpTo, savedState)
+        // When popping, the incoming dialog is marked transitioning to hold it in
+        // STARTED. With pop complete, we can remove it from transition so it can move to RESUMED.
+        val popIndex = state.transitionsInProgress.value.indexOf(popUpTo)
+        // do not mark complete for entries up to and including popUpTo
+        state.transitionsInProgress.value.forEachIndexed { index, entry ->
+            if (index > popIndex) onTransitionComplete(entry)
+        }
     }
     internal fun onTransitionComplete(entry: NavBackStackEntry) {
         state.markTransitionComplete(entry)
@@ -67,7 +79,7 @@ public class DialogNavigator : Navigator<DialogNavigator.Destination>() {
         navigator: DialogNavigator,
         internal val dialogProperties: DialogProperties = DialogProperties(),
         internal val content: @Composable (NavBackStackEntry) -> Unit
-    ) : NavDestination(navigator)
+    ) : NavDestination(navigator), FloatingWindow
     internal companion object {
         internal const val NAME = "dialog"
     }

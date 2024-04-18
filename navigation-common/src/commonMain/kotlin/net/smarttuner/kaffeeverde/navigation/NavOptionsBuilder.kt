@@ -21,6 +21,10 @@
  */
 package net.smarttuner.kaffeeverde.navigation
 
+import androidx.annotation.RestrictTo
+import net.smarttuner.kaffeeverde.core.annotation.IdRes
+import kotlin.reflect.KClass
+
 @DslMarker
 public annotation class NavOptionsDsl
 /**
@@ -53,6 +57,7 @@ public class NavOptionsBuilder {
     /**
      * Returns the current destination that the builder will pop up to.
      */
+    @IdRes
     public var popUpToId: Int = -1
         internal set(value) {
             field = value
@@ -87,7 +92,41 @@ public class NavOptionsBuilder {
      * Pop up to a given destination before navigating. This pops all non-matching destinations
      * from the back stack until this destination is found.
      */
-    public fun popUpTo(id: Int, popUpToBuilder: PopUpToBuilder.() -> Unit = {}) {
+    // both ExperimentalSafeArgsApi annotations required for annotation to appear on API declaration
+    @property:ExperimentalSafeArgsApi
+    @get:ExperimentalSafeArgsApi
+    @get:Suppress("GetterOnBuilder")
+    // required due to getter with ExperimentalSafeArgsApi annotation
+    @Suppress("OPT_IN_MARKER_ON_WRONG_TARGET")
+    public var popUpToRouteClass: KClass<*>? = null
+        private set(value) {
+            if (value != null) {
+                field = value
+                inclusive = false
+            }
+        }
+    /**
+     * Pop up to a given destination before navigating. This pops all non-matching destinations
+     * from the back stack until this destination is found.
+     */
+    // both ExperimentalSafeArgsApi annotations required for annotation to appear on API declaration
+    @property:ExperimentalSafeArgsApi
+    @get:ExperimentalSafeArgsApi
+    @get:Suppress("GetterOnBuilder")
+    // required due to getter with ExperimentalSafeArgsApi annotation
+    @Suppress("OPT_IN_MARKER_ON_WRONG_TARGET")
+    public var popUpToRouteObject: Any? = null
+        private set(value) {
+            if (value != null) {
+                field = value
+                inclusive = false
+            }
+        }
+    /**
+     * Pop up to a given destination before navigating. This pops all non-matching destinations
+     * from the back stack until this destination is found.
+     */
+    public fun popUpTo(@IdRes id: Int, popUpToBuilder: PopUpToBuilder.() -> Unit = {}) {
         popUpToId = id
         popUpToRoute = null
         val builder = PopUpToBuilder().apply(popUpToBuilder)
@@ -104,6 +143,53 @@ public class NavOptionsBuilder {
     public fun popUpTo(route: String, popUpToBuilder: PopUpToBuilder.() -> Unit = {}) {
         popUpToRoute = route
         popUpToId = -1
+        val builder = PopUpToBuilder().apply(popUpToBuilder)
+        inclusive = builder.inclusive
+        saveState = builder.saveState
+    }
+    /**
+     * Pop up to a given destination before navigating. This pops all non-matching destination routes
+     * from the back stack until the destination with a matching route is found.
+     *
+     * @param T route from a [KClass] for the destination
+     * @param popUpToBuilder builder used to construct a popUpTo operation
+     */
+    @ExperimentalSafeArgsApi
+    // align with other popUpTo overloads where this is suppressed in baseline lint ignore
+    @Suppress("BuilderSetStyle")
+    public inline fun <reified T : Any> popUpTo(
+        noinline popUpToBuilder: PopUpToBuilder.() -> Unit = {}
+    ) {
+        popUpTo(T::class, popUpToBuilder)
+    }
+    // this restricted public is needed so that the public reified [popUpTo] can call
+    // private popUpToRouteClass setter
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public fun <T : Any> popUpTo(
+        klass: KClass<T>,
+        popUpToBuilder: PopUpToBuilder.() -> Unit
+    ) {
+        popUpToRouteClass = klass
+        popUpToId = -1
+        popUpToRoute = null
+        val builder = PopUpToBuilder().apply(popUpToBuilder)
+        inclusive = builder.inclusive
+        saveState = builder.saveState
+    }
+    /**
+     * Pop up to a given destination before navigating. This pops all non-matching destination routes
+     * from the back stack until the destination with a matching route is found.
+     *
+     * @param route route from a Object for the destination
+     * @param popUpToBuilder builder used to construct a popUpTo operation
+     */
+    @ExperimentalSafeArgsApi
+    // align with other popUpTo overloads where this is suppressed in baseline lint ignore
+    @Suppress("BuilderSetStyle", "MissingJvmstatic")
+    public fun <T : Any> popUpTo(route: T, popUpToBuilder: PopUpToBuilder.() -> Unit = {}) {
+        popUpToRouteObject = route
+        popUpToId = -1
+        popUpToRoute = null
         val builder = PopUpToBuilder().apply(popUpToBuilder)
         inclusive = builder.inclusive
         saveState = builder.saveState
@@ -126,6 +212,10 @@ public class NavOptionsBuilder {
         setRestoreState(restoreState)
         if (popUpToRoute != null) {
             setPopUpTo(popUpToRoute, inclusive, saveState)
+        } else if (popUpToRouteClass != null) {
+            setPopUpTo(popUpToRouteClass!!, inclusive, saveState)
+        } else if (popUpToRouteObject != null) {
+            setPopUpTo(popUpToRouteObject!!, inclusive, saveState)
         } else {
             setPopUpTo(popUpToId, inclusive, saveState)
         }

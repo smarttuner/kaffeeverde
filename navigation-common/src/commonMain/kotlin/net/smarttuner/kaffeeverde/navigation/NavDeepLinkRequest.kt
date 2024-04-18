@@ -21,7 +21,9 @@
  */
 package net.smarttuner.kaffeeverde.navigation
 
+import androidx.annotation.RestrictTo
 import net.smarttuner.kaffeeverde.core.Uri
+import kotlin.jvm.JvmStatic
 
 /**
  * A request for a deep link in a [NavDestination].
@@ -30,29 +32,13 @@ import net.smarttuner.kaffeeverde.core.Uri
  * [NavDestination] and to navigate to a [NavDestination] with a matching
  * [NavDeepLink].
  */
-public open class NavDeepLinkRequest
-/**
- * The mimeType from the NavDeepLinkRequest.
- *
- * @see NavDeepLink.mimeType
- */
-/**
- * The action from the NavDeepLinkRequest.
- *
- * @see NavDeepLink.action
- */
-/**
- * The uri from the NavDeepLinkRequest.
- *
- * @see NavDeepLink.uriPattern
- */
-/** @suppress */(
+public open class NavDeepLinkRequest @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
     /**
      * The uri from the NavDeepLinkRequest.
      *
      * @see NavDeepLink.uriPattern
      */
-    public open val uri: Uri,
+    public open val uri: Uri?,
     /**
      * The action from the NavDeepLinkRequest.
      *
@@ -64,16 +50,18 @@ public open class NavDeepLinkRequest
      *
      * @see NavDeepLink.mimeType
      */
-    public open val mimeType: String?
+    public open val mimeType: String?,
 ) {
-    /** @suppress */
-    
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+
     public override fun toString(): String {
         val sb = StringBuilder()
         sb.append("NavDeepLinkRequest")
         sb.append("{")
-        sb.append(" uri=")
-        sb.append(uri.toString())
+        if (uri != null) {
+            sb.append(" uri=")
+            sb.append(uri.toString())
+        }
         if (action != null) {
             sb.append(" action=")
             sb.append(action)
@@ -152,6 +140,7 @@ public open class NavDeepLinkRequest
              * @param uri The uri to add to the NavDeepLinkRequest
              * @return a [Builder] instance
              */
+            @JvmStatic
             public fun fromUri(uri: Uri): Builder {
                 val builder = Builder()
                 builder.setUri(uri)
@@ -165,7 +154,7 @@ public open class NavDeepLinkRequest
              * @param action the intent action for the NavDeepLinkRequest
              * @return a [Builder] instance
              */
-            
+            @JvmStatic
             public fun fromAction(action: String): Builder {
                 require(action.isNotEmpty()) {
                     "The NavDeepLinkRequest cannot have an empty action."
@@ -180,7 +169,7 @@ public open class NavDeepLinkRequest
              * @param mimeType the mimeType for the NavDeepLinkRequest
              * @return a [Builder] instance
              */
-            
+            @JvmStatic
             public fun fromMimeType(mimeType: String): Builder {
                 val builder = Builder()
                 builder.setMimeType(mimeType)

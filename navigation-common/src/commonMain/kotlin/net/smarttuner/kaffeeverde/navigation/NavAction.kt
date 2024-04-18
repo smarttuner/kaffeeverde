@@ -23,6 +23,9 @@
 package net.smarttuner.kaffeeverde.navigation
 
 import net.smarttuner.kaffeeverde.core.Bundle
+import net.smarttuner.kaffeeverde.core.annotation.IdRes
+import net.smarttuner.kaffeeverde.core.keySet
+import kotlin.jvm.JvmOverloads
 
 /**
  * Navigation actions provide a level of indirection between your navigation code and the
@@ -30,21 +33,21 @@ import net.smarttuner.kaffeeverde.core.Bundle
  * or [NavOptions] based on the current [NavDestination].
  *
  * The [NavOptions] associated with a NavAction are used by default when navigating
- * to this action via [NavController.navigate] or
- * [NavController.navigate].
+ * to this action via [NavController.navigate].
  *
- * Actions should be added via [NavDestination.putAction] or
- * [NavDestination.putAction].
+ * Actions should be added via [NavDestination.putAction].
  *
  * @param destinationId the ID of the destination that should be navigated to when this
  * action is used.
  * @param navOptions special options for this action that should be used by default
  * @param defaultArguments argument bundle to be used by default
  */
-public class NavAction constructor(
+public class NavAction @JvmOverloads constructor(
     /**
      * The ID of the destination that should be navigated to when this action is used
      */
+    @field:IdRes
+    @param:IdRes
     public val destinationId: Int,
     /**
      * The NavOptions to be used by default when navigating to this action.
@@ -56,4 +59,40 @@ public class NavAction constructor(
      * @return bundle of default argument values
      */
     public var defaultArguments: Bundle? = null
-)
+) {
+    @Suppress("DEPRECATION")
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || other !is NavAction) return false
+        return destinationId == other.destinationId &&
+            navOptions == other.navOptions &&
+            (
+                defaultArguments == other.defaultArguments ||
+                    defaultArguments?.keySet?.all {
+                        defaultArguments?.get(it) == other.defaultArguments?.get(it)
+                    } == true
+                )
+    }
+    @Suppress("DEPRECATION")
+    override fun hashCode(): Int {
+        var result = destinationId.hashCode()
+        result = 31 * result + navOptions.hashCode()
+        defaultArguments?.keySet?.forEach {
+            result = 31 * result + defaultArguments?.get(it).hashCode()
+        }
+        return result
+    }
+    @OptIn(ExperimentalStdlibApi::class)
+    override fun toString(): String {
+        val sb = StringBuilder()
+        sb.append(this::class.qualifiedName)
+        sb.append("(0x")
+        sb.append(destinationId.toHexString())
+        sb.append(")")
+        if (navOptions != null) {
+            sb.append(" navOptions=")
+            sb.append(navOptions)
+        }
+        return sb.toString()
+    }
+}

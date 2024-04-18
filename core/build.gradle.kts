@@ -23,13 +23,19 @@ kotlin {
                 api(Deps.Ktor.Core)
                 api(Deps.UUID.UUID)
                 api(Deps.Napier.Napier)
-                implementation(Deps.DitchoomBuffer.DitchoomBuffer)
+                api(Deps.DitchoomBuffer.DitchoomBuffer)
                 api(libs.collection)
+                implementation(libs.kotlinSerializationJson)
             }
         }
         nativeMain {
             dependencies {
                 implementation(libs.atomicFu)
+            }
+        }
+        androidMain {
+            dependencies {
+                api(Deps.DitchoomBuffer.DitchoomBufferAndroid)
             }
         }
     }

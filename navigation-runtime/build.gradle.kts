@@ -12,6 +12,8 @@ kotlin {
         commonMain {
             dependencies {
                 api(project(":navigation-common"))
+                implementation(libs.kotlinSerializationJson)
+
             }
         }
     }

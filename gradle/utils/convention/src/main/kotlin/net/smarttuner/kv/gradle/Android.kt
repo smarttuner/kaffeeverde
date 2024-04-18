@@ -21,8 +21,8 @@ fun Project.configureAndroid() {
         // Can remove this once https://issuetracker.google.com/issues/260059413 is fixed.
         // See https://kotlinlang.org/docs/gradle-configure-project.html#gradle-java-toolchains-support
         compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_17
-            targetCompatibility = JavaVersion.VERSION_17
+            sourceCompatibility = JavaVersion.VERSION_11
+            targetCompatibility = JavaVersion.VERSION_11
 
             // https://developer.android.com/studio/write/java8-support
             isCoreLibraryDesugaringEnabled = true

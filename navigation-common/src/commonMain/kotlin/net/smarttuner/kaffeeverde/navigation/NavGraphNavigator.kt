@@ -21,6 +21,9 @@
  */
 package net.smarttuner.kaffeeverde.navigation
 
+import kotlinx.coroutines.flow.StateFlow
+import net.smarttuner.kaffeeverde.core.Bundle
+
 
 /**
  * A Navigator built specifically for [NavGraph] elements. Handles navigating to the
@@ -36,6 +39,11 @@ package net.smarttuner.kaffeeverde.navigation
 public open class NavGraphNavigator(
     private val navigatorProvider: NavigatorProvider
 ) : Navigator<NavGraph>() {
+    /**
+     * Gets the backstack of [NavBackStackEntry] associated with this Navigator
+     */
+    public val backStack: StateFlow<List<NavBackStackEntry>>
+        get() = state.backStack
     /**
      * Creates a new [NavGraph] associated with this navigator.
      * @return The created [NavGraph].
@@ -61,7 +69,8 @@ public open class NavGraphNavigator(
         navigatorExtras: Extras?
     ) {
         val destination = entry.destination as NavGraph
-        val args = entry.arguments
+        // contains restored args or args passed explicitly as startDestinationArgs
+        var args = entry.arguments
         val startId = destination.startDestinationId
         val startRoute = destination.startDestinationRoute
         check(startId != 0 || startRoute != null) {
@@ -78,11 +87,23 @@ public open class NavGraphNavigator(
                 "navigation destination $dest is not a direct child of this NavGraph"
             )
         }
+        if (startRoute != null) {
+            val matchingArgs = startDestination.matchDeepLink(startRoute)?.matchingArgs
+            if (matchingArgs != null && !matchingArgs.isEmpty()) {
+                val bundle = Bundle()
+                // we need to add args from startRoute, but it should not override existing args
+                bundle.putAll(matchingArgs)
+                args?.let { bundle.putAll(it) }
+                args = bundle
+            }
+        }
         val navigator = navigatorProvider.getNavigator<Navigator<NavDestination>>(
             startDestination.navigatorName
         )
         val startDestinationEntry = state.createBackStackEntry(
             startDestination,
+            // could contain default args, restored args, args passed during setGraph,
+            // and args from route
             startDestination.addInDefaultArgs(args)
         )
         navigator.navigate(listOf(startDestinationEntry), navOptions, navigatorExtras)

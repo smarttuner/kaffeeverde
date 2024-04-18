@@ -24,6 +24,9 @@
  */
 package net.smarttuner.kaffeeverde.lifecycle
 
+import androidx.annotation.MainThread
+import androidx.annotation.RestrictTo
+import com.benasher44.uuid.Uuid
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,6 +34,7 @@ import net.smarttuner.kaffeeverde.core.Bundle
 import net.smarttuner.kaffeeverde.core.bundleOf
 import net.smarttuner.kaffeeverde.core.getStringArrayList
 import net.smarttuner.kaffeeverde.core.keySet
+import kotlin.jvm.JvmStatic
 
 /**
  * A handle to saved state passed down to [androidx.lifecycle.ViewModel]. You should use
@@ -55,6 +59,11 @@ class SavedStateHandle {
         SavedStateRegistry.SavedStateProvider {
             // Get the saved state from each SavedStateProvider registered with this
             // SavedStateHandle, iterating through a copy to avoid re-entrance
+            val map = savedStateProviders.toMap()
+            for ((key, value) in map) {
+                val savedState = value.saveState()
+                set(key, savedState)
+            }
             // Convert the Map of current values into a Bundle
             val keySet: Set<String> = regular.keys
             val keys: ArrayList<String> = ArrayList(keySet.size)
@@ -77,7 +86,7 @@ class SavedStateHandle {
      * Creates a handle with the empty state.
      */
     constructor()
-    
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun savedStateProvider(): SavedStateRegistry.SavedStateProvider {
         return savedStateProvider
     }
@@ -86,7 +95,7 @@ class SavedStateHandle {
      *
      * @return true if there is value associated with the given key.
      */
-    
+    @MainThread
     operator fun contains(key: String): Boolean {
         return regular.containsKey(key)
     }
@@ -108,7 +117,7 @@ class SavedStateHandle {
      * @param initialValue If no value exists with the given `key`, a new one is created
      * with the given `initialValue`.
      */
-    
+    @MainThread
     fun <T> getStateFlow(key: String, initialValue: T): StateFlow<T> {
         @Suppress("UNCHECKED_CAST")
         // If a flow exists we should just return it, and since it is a StateFlow and a value must
@@ -122,7 +131,84 @@ class SavedStateHandle {
             MutableStateFlow(regular[key]).apply { flows[key] = this }
         }.asStateFlow() as StateFlow<T>
     }
-
+    /**
+     * Returns all keys contained in this [SavedStateHandle]
+     *
+     * Returned set contains all keys: keys used to get LiveData-s, to set SavedStateProviders and
+     * keys used in regular [set].
+     */
+    @MainThread
+    fun keys(): Set<String> = regular.keys + savedStateProviders.keys
+    /**
+     * Returns a value associated with the given key.
+     *
+     * Note: If [T] is an [Array] of [Parcelable] classes, note that you should always use
+     * `Array<Parcelable>` and create a typed array from the result as going through process
+     * death and recreation (or using the `Don't keep activities` developer option) will result
+     * in the type information being lost, thus resulting in a `ClassCastException` if you
+     * directly try to assign the result to an `Array<CustomParcelable>` value.
+     *
+     * ```
+     * val typedArray = savedStateHandle.get<Array<Parcelable>>("KEY").map {
+     *   it as CustomParcelable
+     * }.toTypedArray()
+     * ```
+     *
+     * @param key a key used to retrieve a value.
+     */
+    @MainThread
+    operator fun <T> get(key: String): T? {
+        return try {
+            @Suppress("UNCHECKED_CAST")
+            regular[key] as T?
+        } catch (e: ClassCastException) {
+            // Instead of failing on ClassCastException, we remove the value from the
+            // SavedStateHandle and return null.
+            remove<T>(key)
+            null
+        }
+    }
+    /**
+     * Associate the given value with the key. The value must have a type that could be stored in
+     * [android.os.Bundle]
+     *
+     * This also sets values for any active [LiveData]s or [Flow]s.
+     *
+     * @param key a key used to associate with the given value.
+     * @param value object of any type that can be accepted by Bundle.
+     *
+     * @throws IllegalArgumentException value cannot be saved in saved state
+     */
+    @MainThread
+    operator fun <T> set(key: String, value: T?) {
+        if (!validateValue(value)) {
+            throw IllegalArgumentException(
+                "Can't put value with type ${value!!::class.qualifiedName} into saved state"
+            )
+        }
+        @Suppress("UNCHECKED_CAST")
+        regular[key] = value
+        flows[key]?.value = value
+    }
+    /**
+     * Removes a value associated with the given key. If there is a [LiveData] and/or [StateFlow]
+     * associated with the given key, they will be removed as well.
+     *
+     * All changes to [androidx.lifecycle.LiveData]s or [StateFlow]s previously
+     * returned by [SavedStateHandle.getLiveData] or [getStateFlow] won't be reflected in
+     * the saved state. Also that `LiveData` or `StateFlow` won't receive any updates about new
+     * values associated by the given key.
+     *
+     * @param key a key
+     * @return a value that was previously associated with the given key.
+     */
+    @MainThread
+    fun <T> remove(key: String): T? {
+        @Suppress("UNCHECKED_CAST")
+        val latestValue = regular.remove(key) as T?
+        flows.remove(key)
+        return latestValue
+    }
     /**
      * Set a [SavedStateProvider] that will have its state saved into this SavedStateHandle.
      * This provides a mechanism to lazily provide the [Bundle] of saved state for the given key.
@@ -149,7 +235,7 @@ class SavedStateHandle {
      * @param provider a SavedStateProvider which will receive a callback to
      * [SavedStateProvider.saveState] when the state should be saved
      */
-    
+    @MainThread
     fun setSavedStateProvider(key: String, provider: SavedStateRegistry.SavedStateProvider) {
         savedStateProviders[key] = provider
     }
@@ -162,7 +248,7 @@ class SavedStateHandle {
      *
      * @param key a key previously used with [setSavedStateProvider]
      */
-    
+    @MainThread
     fun clearSavedStateProvider(key: String) {
         savedStateProviders.remove(key)
     }
@@ -170,8 +256,8 @@ class SavedStateHandle {
     companion object {
         private const val VALUES = "values"
         private const val KEYS = "keys"
-        
-        
+        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+        @JvmStatic
         @Suppress("DEPRECATION")
         fun createHandle(restoredState: Bundle?, defaultState: Bundle?): SavedStateHandle {
             if (restoredState == null) {
@@ -180,11 +266,8 @@ class SavedStateHandle {
                     SavedStateHandle()
                 } else {
                     val state: MutableMap<String, Any?> = HashMap()
-                    defaultState.let {
-                        for (key in it.keySet) {
-                            if(key==null) continue
-                            state[key] = defaultState[key]
-                        }
+                    for (key in defaultState.keySet) {
+                        state[key] = defaultState[key]
                     }
                     SavedStateHandle(state)
                 }
@@ -203,10 +286,7 @@ class SavedStateHandle {
             }
             return SavedStateHandle(state)
         }
-        /**
-         * @suppress
-         */
-        
+        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         fun validateValue(value: Any?): Boolean {
             if (value == null) {
                 return true
@@ -241,7 +321,8 @@ class SavedStateHandle {
             FloatArray::class,
             Short::class,
             ShortArray::class,
-            Int::class
+            Int::class,
+            Uuid::class
         )
     }
 }

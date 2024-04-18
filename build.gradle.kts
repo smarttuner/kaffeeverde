@@ -2,6 +2,7 @@
 plugins {
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.cacheFixPlugin) apply false
+    alias(libs.plugins.kotlinSerialization) apply false
 }
 
 buildscript {
@@ -14,8 +15,6 @@ buildscript {
 
     dependencies {
         classpath(Deps.kotlin_gradle_plugin)
-        classpath(Deps.android_gradle_plugin)
-        classpath(Deps.kotlin_serialization_gradle_plugin)
     }
 }
 

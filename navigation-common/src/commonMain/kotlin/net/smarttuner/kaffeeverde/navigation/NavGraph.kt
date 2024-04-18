@@ -25,8 +25,13 @@ import androidx.annotation.RestrictTo
 import androidx.collection.SparseArrayCompat
 import androidx.collection.forEach
 import androidx.collection.valueIterator
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.serializer
 import net.smarttuner.kaffeeverde.core.annotation.IdRes
 import net.smarttuner.kaffeeverde.core.toHexString
+import net.smarttuner.kaffeeverde.navigation.serialization.generateRouteWithArgs
 import kotlin.jvm.JvmStatic
 
 /**
@@ -161,6 +166,31 @@ public open class NavGraph(navGraphNavigator: Navigator<out NavGraph>) :
      */
     public fun findNode(route: String?): NavDestination? {
         return if (!route.isNullOrBlank()) findNode(route, true) else null
+    }
+    /**
+     * Finds a destination in the collection by route from [KClass]. This will recursively check the
+     * [parent][parent] of this navigation graph if node is not found in this navigation graph.
+     *
+     * @param T Route from a [KClass] to locate
+     * @return the node with route - the node must have been created with a route from [KClass]
+     */
+    @OptIn(InternalSerializationApi::class)
+    @ExperimentalSafeArgsApi
+    public inline fun <reified T> findNode(): NavDestination? {
+        return findNode(serializer<T>().hashCode())
+    }
+    /**
+     * Finds a destination in the collection by route from Object. This will recursively check the
+     * [parent][parent] of this navigation graph if node is not found in this navigation graph.
+     *
+     * @param route Route to locate
+     * @return the node with route - the node must have been created with a route from [KClass]
+     */
+    @OptIn(InternalSerializationApi::class)
+    @Suppress("UNNECESSARY_NOT_NULL_ASSERTION")
+    @ExperimentalSafeArgsApi
+    public fun <T> findNode(route: T?): NavDestination? {
+        return if (route != null) findNode(route!!::class.serializer().hashCode()) else null
     }
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public fun findNode(@IdRes resId: Int, searchParents: Boolean): NavDestination? {
@@ -298,6 +328,57 @@ public open class NavGraph(navGraphNavigator: Navigator<out NavGraph>) :
      */
     public fun setStartDestination(startDestRoute: String) {
         startDestinationRoute = startDestRoute
+    }
+    /**
+     * Sets the starting destination for this NavGraph.
+     *
+     * This will override any previously set [startDestinationId]
+     *
+     * @param T The route of the destination as a [KClass] to be shown when navigating
+     * to this NavGraph.
+     */
+    @ExperimentalSafeArgsApi
+    public inline fun <reified T : Any> setStartDestination() {
+        setStartDestination(serializer<T>()) { startDestination ->
+            startDestination.route!!
+        }
+    }
+    /**
+     * Sets the starting destination for this NavGraph.
+     *
+     * This will override any previously set [startDestinationId]
+     *
+     * @param startDestRoute The route of the destination as an object to be shown when navigating
+     * to this NavGraph.
+     */
+    @OptIn(InternalSerializationApi::class)
+    @ExperimentalSafeArgsApi
+    public fun <T : Any> setStartDestination(startDestRoute: T) {
+        setStartDestination(startDestRoute::class.serializer()) { startDestination ->
+            val args = startDestination.arguments.mapValues {
+                it.value.type
+            }
+            startDestRoute.generateRouteWithArgs(args)
+        }
+    }
+    // unfortunately needs to be public so reified setStartDestination can access this
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    @OptIn(ExperimentalSerializationApi::class)
+    public fun <T> setStartDestination(
+        serializer: KSerializer<T>,
+        parseRoute: (NavDestination) -> String,
+    ) {
+        val id = serializer.hashCode()
+        val startDest = findNode(id)
+        checkNotNull(startDest) {
+            "Cannot find startDestination ${serializer.descriptor.serialName} from NavGraph. " +
+                "Ensure the starting NavDestination was added with route from KClass."
+        }
+        // when dest id is based on serializer, we expect the dest route to have been generated
+        // and set
+        startDestinationRoute = parseRoute(startDest)
+        // bypass startDestinationId setter so we don't set route back to null
+        this.startDestId = id
     }
     /**
      * The route for the starting destination for this NavGraph. When navigating to the

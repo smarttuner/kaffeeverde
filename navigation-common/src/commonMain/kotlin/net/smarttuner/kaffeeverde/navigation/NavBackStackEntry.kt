@@ -21,6 +21,7 @@
  */
 package net.smarttuner.kaffeeverde.navigation
 
+import androidx.annotation.MainThread
 import androidx.annotation.RestrictTo
 import androidx.lifecycle.HasDefaultViewModelProviderFactory
 import androidx.lifecycle.Lifecycle
@@ -32,10 +33,12 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.MutableCreationExtras
+import kotlinx.serialization.serializer
 import net.smarttuner.kaffeeverde.core.Bundle
 import net.smarttuner.kaffeeverde.core.UUID
 import net.smarttuner.kaffeeverde.core.keySet
 import net.smarttuner.kaffeeverde.lifecycle.*
+import net.smarttuner.kaffeeverde.navigation.serialization.decodeArguments
 import kotlin.reflect.KClass
 
 /**
@@ -91,7 +94,7 @@ class NavBackStackEntry private constructor(
             hostLifecycleState, viewModelStoreProvider, id, savedState
         )
     }
-    var _lifecycle = LifecycleRegistry(this)
+    private var _lifecycle = LifecycleRegistry(this)
     private val savedStateRegistryController = SavedStateRegistryController.create(this)
     private var savedStateRegistryAttached = false
     private val defaultFactory by lazy {
@@ -114,6 +117,7 @@ class NavBackStackEntry private constructor(
     /**
      * The [SavedStateHandle] for this entry.
      */
+    @get:MainThread
     public val savedStateHandle: SavedStateHandle by lazy {
         check(savedStateRegistryAttached) {
             "You cannot access the NavBackStackEntry's SavedStateHandle until it is added to " +
@@ -126,7 +130,7 @@ class NavBackStackEntry private constructor(
         }
         ViewModelProvider.create(
             this, NavResultSavedStateFactory(this)
-        ).get(SavedStateViewModel::class).handle
+        )[SavedStateViewModel::class].handle
     }
     /**
      * {@inheritDoc}
@@ -219,10 +223,10 @@ class NavBackStackEntry private constructor(
             lifecycle == other.lifecycle &&
             savedStateRegistry == other.savedStateRegistry &&
             (
-                arguments == other.arguments ||
-                        arguments?.keySet
-                            ?.all { arguments[it] == other.arguments?.get(it) } == true
-                    )
+                immutableArgs == other.immutableArgs ||
+                    immutableArgs?.keySet
+                    ?.all { immutableArgs[it] == other.immutableArgs?.get(it) } == true
+                )
     }
     @Suppress("DEPRECATION")
     override fun hashCode(): Int {
@@ -259,4 +263,21 @@ class NavBackStackEntry private constructor(
         }
     }
     private class SavedStateViewModel(val handle: SavedStateHandle) : ViewModel()
+}
+/**
+ * Returns route as an object of type [T]
+ *
+ * Extrapolates arguments from [NavBackStackEntry.arguments] and recreates object [T]
+ *
+ * @param [T] the entry's [NavDestination.route] as a [KClass]
+ *
+ * @return A new instance of this entry's [NavDestination.route] as an object of type [T]
+ */
+@ExperimentalSafeArgsApi
+public inline fun <reified T> NavBackStackEntry.toRoute(): T {
+    val bundle = arguments ?: Bundle()
+    val typeMap = destination.arguments.mapValues {
+        it.value.type
+    }
+    return serializer<T>().decodeArguments(bundle, typeMap)
 }
