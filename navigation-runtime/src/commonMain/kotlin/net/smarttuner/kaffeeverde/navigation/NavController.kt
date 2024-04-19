@@ -178,13 +178,11 @@ public open class NavController{
                 field
             }
         }
-    private val lifecycleObserver: LifecycleObserver = object : LifecycleEventObserver {
-        override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-            hostLifecycleState = event.targetState
-            if (_graph != null) {
-                for (entry in backQueue) {
-                    entry.handleLifecycleEvent(event)
-                }
+    private val lifecycleObserver: LifecycleObserver = LifecycleEventObserver { _, event ->
+        hostLifecycleState = event.targetState
+        if (_graph != null) {
+            for (entry in backQueue) {
+                entry.handleLifecycleEvent(event)
             }
         }
     }
@@ -309,6 +307,7 @@ public open class NavController{
         override fun pop(popUpTo: NavBackStackEntry, saveState: Boolean) {
             val destinationNavigator: Navigator<out NavDestination> =
                 _navigatorProvider[popUpTo.destination.navigatorName]
+            entrySavedState[popUpTo] = saveState
             if (destinationNavigator == navigator) {
                 val handler = popFromBackStackHandler
                 if (handler != null) {
@@ -325,7 +324,6 @@ public open class NavController{
         }
         override fun popWithTransition(popUpTo: NavBackStackEntry, saveState: Boolean) {
             super.popWithTransition(popUpTo, saveState)
-            entrySavedState[popUpTo] = saveState
         }
         override fun markTransitionComplete(entry: NavBackStackEntry) {
             val savedState = entrySavedState[entry] == true
@@ -513,7 +511,6 @@ public open class NavController{
      */
     @MainThread
     @JvmOverloads
-    @ExperimentalSafeArgsApi
     public inline fun <reified T : Any> popBackStack(
         inclusive: Boolean,
         saveState: Boolean = false
@@ -535,7 +532,6 @@ public open class NavController{
      */
     @MainThread
     @JvmOverloads
-    @ExperimentalSafeArgsApi
     public fun <T : Any> popBackStack(
         route: T,
         inclusive: Boolean,
@@ -844,7 +840,6 @@ public open class NavController{
      */
     @OptIn(InternalSerializationApi::class)
     @MainThread
-    @ExperimentalSafeArgsApi
     public fun <T : Any> clearBackStack(route: T): Boolean {
         // route contains arguments so we need to generate and clear with the populated route
         // rather than clearing based on route pattern
@@ -957,22 +952,26 @@ public open class NavController{
             return
         }
         // First determine what the current resumed destination is and, if and only if
-        // the current resumed destination is a FloatingWindow, what destination is
+        // the current resumed destination is a FloatingWindow, what destinations are
         // underneath it that must remain started.
         var nextResumed: NavDestination? = backStack.last().destination
-        var nextStarted: NavDestination? = null
-//        if (nextResumed is FloatingWindow) {
-//            // Find the next destination in the back stack as that destination
-//            // should still be STARTED when the FloatingWindow destination is above it.
-//            val iterator = backStack.reversed().iterator()
-//            while (iterator.hasNext()) {
-//                val destination = iterator.next().destination
-//                if (destination !is NavGraph && destination !is FloatingWindow) {
-//                    nextStarted = destination
-//                    break
-//                }
-//            }
-//        }
+        val nextStarted: MutableList<NavDestination> = mutableListOf()
+        if (nextResumed is FloatingWindow) {
+            // Find all visible destinations in the back stack as they
+            // should still be STARTED when the FloatingWindow destination is above it.
+            val iterator = backStack.reversed().iterator()
+            while (iterator.hasNext()) {
+                val destination = iterator.next().destination
+                // Add all visible destinations (e.g., FloatingWindow destinations, their
+                // NavGraphs, and the screen directly below all FloatingWindow destinations)
+                // to nextStarted
+                nextStarted.add(destination)
+                // break if we find first visible screen
+                if (destination !is FloatingWindow && destination !is NavGraph) {
+                    break
+                }
+            }
+        }
         // First iterate downward through the stack, applying downward Lifecycle
         // transitions and capturing any upward Lifecycle transitions to apply afterwards.
         // This ensures proper nesting where parent navigation graphs are started before
@@ -997,8 +996,10 @@ public open class NavController{
                         upwardStateTransitions[entry] = Lifecycle.State.STARTED
                     }
                 }
+                if (nextStarted.firstOrNull()?.id == destination.id) nextStarted.removeFirst()
                 nextResumed = nextResumed.parent
-            } else if (nextStarted != null && destination.id == nextStarted.id) {
+            } else if (nextStarted.isNotEmpty() && destination.id == nextStarted.first().id) {
+                val started = nextStarted.removeFirst()
                 if (currentMaxLifecycle == Lifecycle.State.RESUMED) {
                     // Downward transitions should be done immediately so children are
                     // paused before their parent navigation graphs
@@ -1008,7 +1009,9 @@ public open class NavController{
                     // the parent navigation graph is started before their children
                     upwardStateTransitions[entry] = Lifecycle.State.STARTED
                 }
-                nextStarted = nextStarted.parent
+                started.parent?.let {
+                    if (!nextStarted.contains(it)) { nextStarted.add(it) }
+                }
             } else {
                 entry.maxLifecycle = Lifecycle.State.CREATED
             }
@@ -1351,6 +1354,9 @@ public open class NavController{
      * Navigate to a destination from the current navigation graph. This supports both navigating
      * via an [action][NavDestination.getAction] and directly navigating to a destination.
      *
+     * If given [NavOptions] pass in [NavOptions.restoreState] `true`, any args passed here will be
+     * overridden by the restored args.
+     *
      * @param resId an [action][NavDestination.getAction] id or a destination id to
      * navigate to
      * @param args arguments to pass to the destination
@@ -1364,10 +1370,12 @@ public open class NavController{
     public open fun navigate(@IdRes resId: Int, args: Bundle?, navOptions: NavOptions?) {
         navigate(resId, args, navOptions, null)
     }
-
     /**
      * Navigate to a destination from the current navigation graph. This supports both navigating
      * via an [action][NavDestination.getAction] and directly navigating to a destination.
+     *
+     * If given [NavOptions] pass in [NavOptions.restoreState] `true`, any args passed here will be
+     * overridden by the restored args.
      *
      * @param resId an [action][NavDestination.getAction] id or a destination id to
      * navigate to
@@ -1379,6 +1387,7 @@ public open class NavController{
      * @throws IllegalArgumentException if the desired destination cannot be found from the
      *                                  current destination
      */
+    @OptIn(InternalSerializationApi::class)
     @MainThread
     public open fun navigate(
         @IdRes resId: Int,
@@ -1417,8 +1426,25 @@ public open class NavController{
             }
             combinedArgs.putAll(args)
         }
-        if (destId == 0 && finalNavOptions != null && finalNavOptions.popUpToId != -1) {
-            popBackStack(finalNavOptions.popUpToId, finalNavOptions.isPopUpToInclusive())
+        // just pop and return if destId is invalid
+        if (destId == 0 && finalNavOptions != null && (finalNavOptions.popUpToId != -1 ||
+                finalNavOptions.popUpToRoute != null || finalNavOptions.popUpToRouteClass != null)
+        ) {
+            when {
+                finalNavOptions.popUpToRoute != null ->
+                    popBackStack(
+                        finalNavOptions.popUpToRoute!!, finalNavOptions.isPopUpToInclusive()
+                    )
+                finalNavOptions.popUpToRouteClass != null ->
+                    popBackStack(
+                        finalNavOptions.popUpToRouteClass!!.serializer().hashCode(),
+                        finalNavOptions.isPopUpToInclusive()
+                    )
+                finalNavOptions.popUpToId != -1 ->
+                    popBackStack(
+                        finalNavOptions.popUpToId, finalNavOptions.isPopUpToInclusive()
+                    )
+            }
             return
         }
         require(destId != 0) {
@@ -1555,9 +1581,7 @@ public open class NavController{
             )
         }
     }
-    @OptIn(InternalSerializationApi::class, ExperimentalSafeArgsApi::class,
-        InternalSerializationApi::class
-    )
+    @OptIn(InternalSerializationApi::class)
     @MainThread
     private fun navigate(
         node: NavDestination,
@@ -1916,6 +1940,9 @@ public open class NavController{
      * Navigate to a route in the current NavGraph. If an invalid route is given, an
      * [IllegalArgumentException] will be thrown.
      *
+     * If given [NavOptions] pass in [NavOptions.restoreState] `true`, any args passed here as part
+     * of the route will be overridden by the restored args.
+     *
      * @param route route for the destination
      * @param builder DSL for constructing a new [NavOptions]
      *
@@ -1965,7 +1992,6 @@ public open class NavController{
      * @throws IllegalArgumentException if the given route is invalid
      */
     @MainThread
-    @ExperimentalSafeArgsApi
     public fun <T : Any> navigate(route: T, builder: NavOptionsBuilder.() -> Unit) {
         navigate(route, navOptions(builder))
     }
@@ -1986,7 +2012,6 @@ public open class NavController{
      */
     @MainThread
     @JvmOverloads
-    @ExperimentalSafeArgsApi
     public fun <T : Any> navigate(
         route: T,
         navOptions: NavOptions? = null,
@@ -2015,7 +2040,7 @@ public open class NavController{
      *
      * @return saved state for this controller
      */
-
+    @CallSuper
     public open fun saveState(): Bundle? {
         var b: Bundle? = null
         val navigatorNames = ArrayList<String>()
@@ -2121,9 +2146,7 @@ public open class NavController{
         }
         deepLinkHandled = navState.getBoolean(KEY_DEEP_LINK_HANDLED)
     }
-
-    /** @suppress */
-
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public open fun setLifecycleOwner(owner: LifecycleOwner) {
         if (owner == lifecycleOwner) {
             return
@@ -2231,6 +2254,40 @@ public open class NavController{
                 "current destination is $currentDestination"
         }
         return lastFromBackStack
+    }
+    /**
+     * Gets the topmost [NavBackStackEntry] for a route from [KClass].
+     *
+     * This is always safe to use with [the current destination][currentDestination] or
+     * [its parent][NavDestination.parent] or grandparent navigation graphs as these
+     * destinations are guaranteed to be on the back stack.
+     *
+     * @param T route from the [KClass] of a destination that exists on the back stack. The
+     * target NavBackStackEntry's [NavDestination] must have been created with route from [KClass].
+     * @throws IllegalArgumentException if the destination is not on the back stack
+     */
+    public inline fun <reified T : Any> getBackStackEntry(): NavBackStackEntry =
+        getBackStackEntry(serializer<T>().hashCode())
+    /**
+     * Gets the topmost [NavBackStackEntry] for a route from an Object.
+     *
+     * This is always safe to use with [the current destination][currentDestination] or
+     * [its parent][NavDestination.parent] or grandparent navigation graphs as these
+     * destinations are guaranteed to be on the back stack.
+     *
+     * @param route route from an Object of a destination that exists on the back stack. The
+     * target NavBackStackEntry's [NavDestination] must have been created with route from [KClass].
+     * @throws IllegalArgumentException if the destination is not on the back stack
+     */
+    public fun <T : Any> getBackStackEntry(route: T): NavBackStackEntry {
+        // route contains arguments so we need to generate the populated route
+        // rather than getting entry based on route pattern
+        val finalRoute = generateRouteFilled(route, fromBackStack = true)
+        requireNotNull(finalRoute) {
+            "No destination with route $finalRoute is on the NavController's back stack. The " +
+                "current destination is $currentDestination"
+        }
+        return getBackStackEntry(finalRoute)
     }
     /**
      * The topmost [NavBackStackEntry].
@@ -2354,7 +2411,6 @@ public inline fun NavController.createGraph(
  * does not use custom NavTypes.
  * @param builder the builder used to construct the graph
  */
-@ExperimentalSafeArgsApi
 public inline fun NavController.createGraph(
     startDestination: KClass<*>,
     route: KClass<*>? = null,
@@ -2371,7 +2427,6 @@ public inline fun NavController.createGraph(
  * does not use custom NavTypes.
  * @param builder the builder used to construct the graph
  */
-@ExperimentalSafeArgsApi
 public inline fun NavController.createGraph(
     startDestination: Any,
     route: KClass<*>? = null,

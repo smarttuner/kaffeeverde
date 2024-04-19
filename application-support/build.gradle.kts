@@ -27,6 +27,7 @@ kotlin {
                 api(compose.ui)
                 api(compose.foundation)
                 api(compose.runtime)
+                api(libs.lifecycle.runtime)
                 implementation(project(":compose-helper"))
             }
         }
