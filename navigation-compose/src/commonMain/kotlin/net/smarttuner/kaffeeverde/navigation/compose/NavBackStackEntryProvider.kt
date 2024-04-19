@@ -55,7 +55,7 @@ public fun NavBackStackEntry.LocalOwnersProvider(
 }
 @Composable
 private fun SaveableStateHolder.SaveableStateProvider(content: @Composable () -> Unit) {
-    val viewModel = viewModel<BackStackEntryIdViewModel>{
+    val viewModel = viewModel(BackStackEntryIdViewModel::class){
         BackStackEntryIdViewModel(SavedStateHandle())
     }
     // Stash a reference to the SaveableStateHolder in the ViewModel so that

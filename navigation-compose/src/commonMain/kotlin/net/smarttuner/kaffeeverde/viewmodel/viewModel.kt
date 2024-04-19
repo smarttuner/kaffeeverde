@@ -29,12 +29,6 @@ import net.smarttuner.kaffeeverde.lifecycle.ui.LocalViewModelStoreOwner
 import kotlin.reflect.KClass
 
 @Composable
-inline public fun <reified T : ViewModel> viewModel(
-    keys: List<Any?> = emptyList(),
-    noinline creator: () -> T,
-): T = viewModel(T::class, keys, creator = creator)
-
-@Composable
 public fun <T : ViewModel> viewModel(
     modelClass: KClass<T>,
     keys: List<Any?> = emptyList(),
